@@ -19,7 +19,7 @@ class Token {
 	}
 
 	public int endIndex() {
-		return startIndex + rawString.length();
+		return startIndex + rawString.length() -1;
 	}
 
 	public Token concatenate(Token rightOfThis) {
@@ -28,7 +28,7 @@ class Token {
 	}
 
 	public boolean isLeftOf(Token token) {
-		return endIndex() <= token.startIndex;
+		return endIndex() < token.startIndex;
 	}
 
 }

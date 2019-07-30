@@ -17,9 +17,9 @@ class TokenTests {
 
 	@Test
 	void endIndex() {
-		assertThat(new Token(0, "!").endIndex()).isEqualTo(1);
-		assertThat(new Token(0, "  !").endIndex()).isEqualTo(3);
-		assertThat(new Token(7, "!").endIndex()).isEqualTo(8);
+		assertThat(new Token(0, "!").endIndex()).isEqualTo(0);
+		assertThat(new Token(0, "  !").endIndex()).isEqualTo(2);
+		assertThat(new Token(7, "!").endIndex()).isEqualTo(7);
 	}
 
 	@Test

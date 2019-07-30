@@ -38,13 +38,13 @@ class ParserErrorTests {
 
 	@Test
 	void partialUnaryOperator() {
-		assertThat(parseErrorFromParsing("!")).contains("! at <0> missing operand");
+		assertThat(parseErrorFromParsing("!")).contains("! at <0> missing rhs operand");
 	}
 
 	@Test
 	void partialBinaryOperator() {
-		assertThat(parseErrorFromParsing("& foo")).contains("& at <0> missing operand");
-		assertThat(parseErrorFromParsing("foo |")).contains("| at <1> missing operand");
+		assertThat(parseErrorFromParsing("& foo")).contains("& at <0> missing lhs operand");
+		assertThat(parseErrorFromParsing("foo |")).contains("| at <1> missing rhs operand");
 	}
 
 	@ParameterizedTest
@@ -56,7 +56,11 @@ class ParserErrorTests {
 	private static Stream<Arguments> data() {
 		// @formatter:off
         return Stream.of(
-                Arguments.of("foo bar", "missing operator"),
+                Arguments.of("&", "& at <0> missing lhs and rhs operand"),
+                Arguments.of("|", "| at <0> missing lhs and rhs operand"),
+                Arguments.of("| |", "| at <0> missing lhs and rhs operand"),
+                Arguments.of("!", "! at <0> missing rhs operand"),
+                Arguments.of("foo bar", "missing operator"), // improve?
                 Arguments.of("foo bar |", "| at <2> missing rhs operand"),
                 Arguments.of("foo bar &", "& at <2> missing rhs operand"),
                 Arguments.of("foo & (bar !)", "! at <4> missing rhs operand"),
@@ -66,13 +70,12 @@ class ParserErrorTests {
                 Arguments.of("foo & (bar baz) |", "missing operator between bar <3> and baz <4>"),
 
                 Arguments.of("foo & (bar baz) &", "missing operator between bar <3> and baz <4>"),
-                Arguments.of("foo & (bar |baz) &", "& at <7> missing operand"),
+                Arguments.of("foo & (bar |baz) &", "& at <7> missing rhs operand"),
 
                 Arguments.of("foo | (bar baz) &", "& at <6> missing rhs operand"),
                 Arguments.of("foo | (bar baz) &quux", "missing operator between bar <3> and (baz & quux) <6>"),
 
-                Arguments.of("foo & |", "& at <1> missing operand"),
-                Arguments.of("| |", "| at <0> missing operand"),
+                Arguments.of("foo & |", "& at <1> missing rhs operand"),
                 Arguments.of("foo !& bar", "! at <1> missing rhs operand"),
                 Arguments.of("foo !| bar", "! at <1> missing rhs operand")
         );

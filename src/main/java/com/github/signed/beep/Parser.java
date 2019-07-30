@@ -23,8 +23,14 @@ public class Parser {
     private final Tokenizer tokenizer = new Tokenizer();
 
     Optional<Expression> parse(String infixTagExpression) {
-        List<String> tokens = tokenizer.tokenize(infixTagExpression);
+        return constructExpressionFrom(tokensDerivedFrom(infixTagExpression));
+    }
 
+    private List<String> tokensDerivedFrom(String infixTagExpression) {
+        return tokenizer.tokenize(infixTagExpression);
+    }
+
+    private Optional<Expression> constructExpressionFrom(List<String> tokens) {
         Stack<Position<Expression>> expressions = new DequeStack<>();
         Stack<Position<Operator>> operators = new DequeStack<>();
         operators.push(new Position<>(-1, Sentinel));

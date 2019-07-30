@@ -2,6 +2,9 @@ package com.github.signed.beep;
 
 import static com.github.signed.beep.Associativity.Left;
 
+import java.util.function.BiFunction;
+import java.util.function.Function;
+
 class Operator {
 
 	static Operator nullaryOperator(String representation, int precedence) {
@@ -9,12 +12,39 @@ class Operator {
 	}
 
 	static Operator unaryOperator(String representation, int precedence, Associativity associativity,
-			ExpressionCreator expressionCreator) {
+			Function<Expression, Expression> unaryExpression) {
+		ExpressionCreator expressionCreator = (expressions, position) -> {
+			Position<Expression> rhs = expressions.pop();
+			if (position < rhs.position) {
+				Expression not = unaryExpression.apply(rhs.element);
+				expressions.push(new Position<>(position, not));
+				return ParseStatus.success();
+			}
+			return ParseStatus.Create(position, representation, "missing rhs operand");
+		};
 		return new Operator(representation, precedence, 1, associativity, expressionCreator);
 	}
 
 	static Operator binaryOperator(String representation, int precedence, Associativity associativity,
-			ExpressionCreator expressionCreator) {
+			BiFunction<Expression, Expression, Expression> binaryExpression) {
+		ExpressionCreator expressionCreator = (expressions, position) -> {
+			Position<Expression> rhs = expressions.pop();
+			Position<Expression> lhs = expressions.pop();
+			if (lhs.position < position && position < rhs.position) {
+				expressions.push(new Position<>(position, binaryExpression.apply(lhs.element, rhs.element)));
+				return ParseStatus.success();
+			}
+
+			if (position > rhs.position) {
+				return ParseStatus.Create(position, representation, "missing rhs operand");
+			}
+			if (position < lhs.position) {
+				return ParseStatus.missingOperatorBetween(lhs.position, lhs.element.toString(), rhs.position,
+					rhs.element.toString());
+			}
+			return ParseStatus.problemParsing(position, representation);
+		};
+
 		return new Operator(representation, precedence, 2, associativity, expressionCreator);
 	}
 
@@ -33,9 +63,9 @@ class Operator {
 		this.expressionCreator = expressionCreator;
 	}
 
-    boolean represents(String token) {
-        return representation.equals(token);
-    }
+	boolean represents(String token) {
+		return representation.equals(token);
+	}
 
 	String representation() {
 		return representation;
@@ -45,13 +75,13 @@ class Operator {
 		return this.precedence < operator.precedence;
 	}
 
-    boolean hasSamePrecedenceAs(Operator operator) {
-        return this.precedence == operator.precedence;
-    }
+	boolean hasSamePrecedenceAs(Operator operator) {
+		return this.precedence == operator.precedence;
+	}
 
-    boolean isLeftAssociative() {
-        return Left == associativity;
-    }
+	boolean isLeftAssociative() {
+		return Left == associativity;
+	}
 
 	ParseStatus createAndAddExpressionTo(Stack<Position<Expression>> expressions, int position) {
 		if (expressions.size() < arity) {

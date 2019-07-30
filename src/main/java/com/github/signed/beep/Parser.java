@@ -7,6 +7,9 @@ import static com.github.signed.beep.Operator.nullaryOperator;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * The parser is based on a modified version of the <a href="https://en.wikipedia.org/wiki/Shunting-yard_algorithm">Shunting-yard algorithm</a>
+ */
 public class Parser {
 	private static Operator RightParenthesis = nullaryOperator(")", -1);
 	private static Operator LeftParenthesis = nullaryOperator("(", -2);

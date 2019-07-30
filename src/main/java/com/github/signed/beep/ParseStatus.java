@@ -8,13 +8,15 @@ class ParseStatus {
 		return new ParseStatus(null);
 	}
 
-	static ParseStatus missingOperatorBetween(int lhsPosition, String lhsRepresentation, int rhsPosition,
-			String rhsRepresentation) {
-		return new ParseStatus("missing operator between " + lhsRepresentation + " <" + lhsPosition + "> and "
-				+ rhsRepresentation + " <" + rhsPosition + ">");
-	}
+    static ParseStatus missingOperatorBetween(Position<Expression> rhs, Position<Expression> lhs) {
+        return new ParseStatus("missing operator between " + format(lhs) + " and " + format(rhs));
+    }
 
-	static ParseStatus problemParsing(int position, String representation) {
+    private static String format(Position<Expression> rhs) {
+        return rhs.element.toString() + " <" + rhs.position + ">";
+    }
+
+    static ParseStatus problemParsing(int position, String representation) {
 		return Create(position, representation, "problem parsing");
 	}
 

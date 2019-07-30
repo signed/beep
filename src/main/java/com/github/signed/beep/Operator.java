@@ -1,7 +1,6 @@
 package com.github.signed.beep;
 
 import static com.github.signed.beep.Associativity.Left;
-import static com.github.signed.beep.ParseStatus.missingOperatorBetween;
 import static com.github.signed.beep.ParseStatus.missingRhsOperand;
 
 import java.util.function.BiFunction;
@@ -39,7 +38,7 @@ class Operator {
                 return missingRhsOperand(representation, position);
             }
             if (position < lhs.position) {
-                return missingOperatorBetween(lhs.position, lhs.element.toString(), rhs.position, rhs.element.toString());
+                return ParseStatus.missingOperatorBetween(rhs, lhs);
             }
             return ParseStatus.problemParsing(position, representation);
         });

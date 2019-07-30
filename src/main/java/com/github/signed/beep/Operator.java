@@ -16,7 +16,7 @@ class Operator {
 	}
 
 	interface ExpressionCreator {
-		ParseStatus createExpressionAndAddTo(Stack<Position<Expression>> expressions, Token operatorToken);
+		ParseStatus createExpressionAndAddTo(Stack<TokenWith<Expression>> expressions, Token operatorToken);
 	}
 
 	static Operator nullaryOperator(String representation, int precedence) {
@@ -26,10 +26,10 @@ class Operator {
 	static Operator unaryOperator(String representation, int precedence, Associativity associativity,
 			Function<Expression, Expression> unaryExpression) {
 		return new Operator(representation, precedence, 1, associativity, (expressions, operatorToken) -> {
-			Position<Expression> rhs = expressions.pop();
+			TokenWith<Expression> rhs = expressions.pop();
 			if (operatorToken.rightMostPosition() < rhs.token.leftMostPosition()) {
 				expressions.push(
-					new Position<>(operatorToken.concatenate(rhs.token), unaryExpression.apply(rhs.element)));
+					new TokenWith<>(operatorToken.concatenate(rhs.token), unaryExpression.apply(rhs.element)));
 				return success();
 			}
 			return missingRhsOperand(operatorToken, representation);
@@ -39,12 +39,12 @@ class Operator {
 	static Operator binaryOperator(String representation, int precedence, Associativity associativity,
 			BiFunction<Expression, Expression, Expression> binaryExpression) {
 		return new Operator(representation, precedence, 2, associativity, (expressions, operatorToken) -> {
-			Position<Expression> rhs = expressions.pop();
-			Position<Expression> lhs = expressions.pop();
+			TokenWith<Expression> rhs = expressions.pop();
+			TokenWith<Expression> lhs = expressions.pop();
 			if (lhs.token.rightMostPosition() < operatorToken.leftMostPosition()
 					&& operatorToken.rightMostPosition() < rhs.token.leftMostPosition()) {
 				Token combinedToken = lhs.token.concatenate(operatorToken).concatenate(rhs.token);
-				expressions.push(new Position<>(combinedToken, binaryExpression.apply(lhs.element, rhs.element)));
+				expressions.push(new TokenWith<>(combinedToken, binaryExpression.apply(lhs.element, rhs.element)));
 				return success();
 			}
 			if (rhs.token.rightMostPosition() < operatorToken.leftMostPosition()) {
@@ -92,7 +92,7 @@ class Operator {
 		return Left == associativity;
 	}
 
-	ParseStatus createAndAddExpressionTo(Stack<Position<Expression>> expressions, Token operatorToken) {
+	ParseStatus createAndAddExpressionTo(Stack<TokenWith<Expression>> expressions, Token operatorToken) {
 		if (expressions.size() < arity) {
 			String message = createMissingOperandMessage(expressions, operatorToken);
 			return ParseStatus.errorAt(operatorToken, representation, message);
@@ -100,7 +100,7 @@ class Operator {
 		return expressionCreator.createExpressionAndAddTo(expressions, operatorToken);
 	}
 
-	private String createMissingOperandMessage(Stack<Position<Expression>> expressions, Token operatorToken) {
+	private String createMissingOperandMessage(Stack<TokenWith<Expression>> expressions, Token operatorToken) {
 		if (1 == arity) {
 			return missingOneOperand(associativity == Left ? "lhs" : "rhs");
 		}

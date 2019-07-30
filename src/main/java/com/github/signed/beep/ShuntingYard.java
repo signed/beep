@@ -22,8 +22,8 @@ class ShuntingYard {
 	private static final Operator Sentinel = nullaryOperator("sentinel", MIN_VALUE);
 
 	private final Operators validOperators = new Operators();
-	private final Stack<Position<Expression>> expressions = new DequeStack<>();
-	private final Stack<Position<Operator>> operators = new DequeStack<>();
+	private final Stack<TokenWith<Expression>> expressions = new DequeStack<>();
+	private final Stack<TokenWith<Operator>> operators = new DequeStack<>();
 	private final List<Token> tokens;
 
 	ShuntingYard(List<Token> tokens) {
@@ -70,12 +70,12 @@ class ShuntingYard {
 
 	private ParseStatus findMatchingLeftParenthesis(Token token) {
 		while (!operators.isEmpty()) {
-			Position<Operator> positionWithOperator = operators.pop();
-			Operator operator = positionWithOperator.element;
+			TokenWith<Operator> tokenWithWithOperator = operators.pop();
+			Operator operator = tokenWithWithOperator.element;
 			if (LeftParenthesis.equals(operator)) {
 				return success();
 			}
-			ParseStatus parseStatus = operator.createAndAddExpressionTo(expressions, positionWithOperator.token);
+			ParseStatus parseStatus = operator.createAndAddExpressionTo(expressions, tokenWithWithOperator.token);
 			if (parseStatus.isError()) {
 				return parseStatus;
 			}
@@ -86,9 +86,9 @@ class ShuntingYard {
 	private ParseStatus findOperands(Token token, Operator currentOperator) {
 		while (currentOperator.hasLowerPrecedenceThan(previousOperator())
 				|| currentOperator.hasSamePrecedenceAs(previousOperator()) && currentOperator.isLeftAssociative()) {
-			Position<Operator> positionWithOperator = operators.pop();
-			ParseStatus parseStatus = positionWithOperator.element.createAndAddExpressionTo(expressions,
-				positionWithOperator.token);
+			TokenWith<Operator> tokenWithWithOperator = operators.pop();
+			ParseStatus parseStatus = tokenWithWithOperator.element.createAndAddExpressionTo(expressions,
+				tokenWithWithOperator.token);
 			if (parseStatus.isError()) {
 				return parseStatus;
 			}
@@ -102,21 +102,21 @@ class ShuntingYard {
 	}
 
 	private void pushExpressionAt(Token token, Expression expression) {
-		expressions.push(new Position<>(token, expression));
+		expressions.push(new TokenWith<>(token, expression));
 	}
 
 	private void pushOperatorAt(Token token, Operator operator) {
-		operators.push(new Position<>(token, operator));
+		operators.push(new TokenWith<>(token, operator));
 	}
 
 	private ParseStatus consumeRemainingOperators() {
 		while (!operators.isEmpty()) {
-			Position<Operator> positionWithOperator = operators.pop();
-			Operator operator = positionWithOperator.element;
+			TokenWith<Operator> tokenWithWithOperator = operators.pop();
+			Operator operator = tokenWithWithOperator.element;
 			if (LeftParenthesis.equals(operator)) {
-				return missingClosingParenthesis(positionWithOperator.token, operator.representation());
+				return missingClosingParenthesis(tokenWithWithOperator.token, operator.representation());
 			}
-			ParseStatus parseStatus = operator.createAndAddExpressionTo(expressions, positionWithOperator.token);
+			ParseStatus parseStatus = operator.createAndAddExpressionTo(expressions, tokenWithWithOperator.token);
 			if (parseStatus.isError()) {
 				return parseStatus;
 			}

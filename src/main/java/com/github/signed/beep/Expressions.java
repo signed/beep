@@ -30,7 +30,7 @@ class Expressions {
 
 			@Override
 			public String toString() {
-				return "not(" + toNegate + ")";
+				return "!(" + toNegate + ")";
 			}
 		};
 	}
@@ -44,7 +44,7 @@ class Expressions {
 
 			@Override
 			public String toString() {
-				return "(" + lhs + " and " + rhs + ")";
+				return "(" + lhs + " & " + rhs + ")";
 			}
 		};
 	}
@@ -58,7 +58,7 @@ class Expressions {
 
 			@Override
 			public String toString() {
-				return "(" + lhs + " or " + rhs + ")";
+				return "(" + lhs + " | " + rhs + ")";
 			}
 		};
 	}

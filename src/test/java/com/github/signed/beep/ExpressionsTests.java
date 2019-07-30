@@ -36,7 +36,7 @@ class ExpressionsTests {
 
 	@Test
 	void encloseNotWithBrackets() {
-		assertThat(not(tag("foo"))).hasToString("not(foo)");
+		assertThat(not(tag("foo"))).hasToString("!(foo)");
 	}
 
 	@Test
@@ -47,7 +47,7 @@ class ExpressionsTests {
 
 	@Test
 	void encloseAndWithParenthesis() {
-		assertThat(and(tag("foo"), tag("bar"))).hasToString("(foo and bar)");
+		assertThat(and(tag("foo"), tag("bar"))).hasToString("(foo & bar)");
 	}
 
 	@Test
@@ -59,7 +59,7 @@ class ExpressionsTests {
 
 	@Test
 	void encloseOrWithParenthesis() {
-		assertThat(or(tag("foo"), tag("bar"))).hasToString("(foo or bar)");
+		assertThat(or(tag("foo"), tag("bar"))).hasToString("(foo | bar)");
 	}
 
 	@Test

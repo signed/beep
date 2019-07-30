@@ -23,24 +23,24 @@ class ParserErrorTests {
 	@Test
 	void missingClosingParenthesis() {
 		assertThat(expressionParsedFrom("(")).isEmpty();
-		assertThat(expressionParsedFrom("( foo and bar")).isEmpty();
+		assertThat(expressionParsedFrom("( foo & bar")).isEmpty();
 	}
 
 	@Test
 	void missingOpeningParenthesis() {
 		assertThat(expressionParsedFrom(")")).isEmpty();
-		assertThat(expressionParsedFrom(" foo or bar)")).isEmpty();
+		assertThat(expressionParsedFrom(" foo | bar)")).isEmpty();
 	}
 
 	@Test
 	void partialUnaryOperator() {
-		assertThat(expressionParsedFrom("not")).isEmpty();
+		assertThat(expressionParsedFrom("!")).isEmpty();
 	}
 
 	@Test
 	void partialBinaryOperator() {
-		assertThat(expressionParsedFrom("and foo")).isEmpty();
-		assertThat(expressionParsedFrom("foo or")).isEmpty();
+		assertThat(expressionParsedFrom("& foo")).isEmpty();
+		assertThat(expressionParsedFrom("foo |")).isEmpty();
 	}
 
 	private Optional<Expression> expressionParsedFrom(String tagExpression) {

@@ -15,27 +15,27 @@ class ParserTests {
 
 	@Test
 	void notHasHigherPrecedenceThanAnd() {
-		assertThat(expressionParsedFrom("not foo and bar")).hasToString("(not(foo) and bar)");
+		assertThat(expressionParsedFrom("! foo & bar")).hasToString("(!(foo) & bar)");
 	}
 
 	@Test
 	void andHasHigherPrecedenceThanOr() {
-		assertThat(expressionParsedFrom("foo or bar and baz")).hasToString("(foo or (bar and baz))");
+		assertThat(expressionParsedFrom("foo | bar & baz")).hasToString("(foo | (bar & baz))");
 	}
 
 	@Test
 	void notIsRightAssociative() {
-		assertThat(expressionParsedFrom("not not foo")).hasToString("not(not(foo))");
+		assertThat(expressionParsedFrom("! ! foo")).hasToString("!(!(foo))");
 	}
 
 	@Test
 	void andIsLeftAssociative() {
-		assertThat(expressionParsedFrom("foo and bar and baz")).hasToString("((foo and bar) and baz)");
+		assertThat(expressionParsedFrom("foo & bar & baz")).hasToString("((foo & bar) & baz)");
 	}
 
 	@Test
 	void orIsLeftAssociative() {
-		assertThat(expressionParsedFrom("foo or bar or baz")).hasToString("((foo or bar) or baz)");
+		assertThat(expressionParsedFrom("foo | bar | baz")).hasToString("((foo | bar) | baz)");
 	}
 
 	@ParameterizedTest
@@ -48,10 +48,10 @@ class ParserTests {
 		// @formatter:off
 		return Stream.of(
 				Arguments.of("foo", "foo"),
-				Arguments.of("not foo", "not(foo)"),
-				Arguments.of("foo and bar", "(foo and bar)"),
-				Arguments.of("foo or bar", "(foo or bar)"),
-				Arguments.of("( not foo and bar or baz)", "((not(foo) and bar) or baz)")
+				Arguments.of("! foo", "!(foo)"),
+				Arguments.of("foo & bar", "(foo & bar)"),
+				Arguments.of("foo | bar", "(foo | bar)"),
+				Arguments.of("( ! foo & bar | baz)", "((!(foo) & bar) | baz)")
 		);
 		// @formatter:on
 	}

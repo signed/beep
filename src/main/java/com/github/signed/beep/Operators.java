@@ -13,16 +13,16 @@ import java.util.stream.Stream;
 
 class Operators {
 
-	private static final Operator Not = Operator.unaryOperator("not", 3, Right,
+	private static final Operator Not = Operator.unaryOperator("!", 3, Right,
 		expressionStack -> expressionStack.push(not(expressionStack.pop())));
 
-	private static final Operator And = Operator.binaryOperator("and", 2, Left, expressionStack -> {
+	private static final Operator And = Operator.binaryOperator("&", 2, Left, expressionStack -> {
 		Expression rhs = expressionStack.pop();
 		Expression lhs = expressionStack.pop();
 		expressionStack.push(and(lhs, rhs));
 	});
 
-	private static final Operator Or = Operator.binaryOperator("or", 1, Left, expressionStack -> {
+	private static final Operator Or = Operator.binaryOperator("|", 1, Left, expressionStack -> {
 		Expression rhs = expressionStack.pop();
 		Expression lhs = expressionStack.pop();
 		expressionStack.push(or(lhs, rhs));

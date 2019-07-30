@@ -61,9 +61,9 @@ class ShuntingYard {
             if (LeftParenthesis.equals(candidate)) {
                 return ParseStatus.NoParseError();
             }
-            ParseStatus maybeParseStatus = candidate.createAndAddExpressionTo(expressions, pop.position);
-            if (maybeParseStatus.isError()) {
-                return maybeParseStatus;
+            ParseStatus parseStatus = candidate.createAndAddExpressionTo(expressions, pop.position);
+            if (parseStatus.isError()) {
+                return parseStatus;
             }
         }
         return ParseStatus.missingOpeningParenthesis(position, RightParenthesis.representation());
@@ -74,9 +74,9 @@ class ShuntingYard {
         while (currentOperator.hasLowerPrecedenceThan(operators.peek().element)
                 || currentOperator.hasSamePrecedenceAs(operators.peek().element) && currentOperator.isLeftAssociative()) {
             Position<Operator> pop = operators.pop();
-            ParseStatus maybeParseStatus = pop.element.createAndAddExpressionTo(expressions, pop.position);
-            if (maybeParseStatus.isError()) {
-                return maybeParseStatus;
+            ParseStatus parseStatus = pop.element.createAndAddExpressionTo(expressions, pop.position);
+            if (parseStatus.isError()) {
+                return parseStatus;
             }
         }
         pushPositionAt(position, currentOperator);
@@ -92,20 +92,20 @@ class ShuntingYard {
     }
 
     private ParseStatus consumeRemainingOperators() {
-        ParseStatus maybeParseStatus4 = ParseStatus.NoParseError();
-        while (maybeParseStatus4.noError() && !operators.isEmpty()) {
+        ParseStatus parseStatus = ParseStatus.NoParseError();
+        while (parseStatus.noError() && !operators.isEmpty()) {
             Position<Operator> pop = operators.pop();
             Operator operator = pop.element;
             if (LeftParenthesis.equals(operator)) {
-                maybeParseStatus4 = missingClosingParenthesis(pop.position, pop.element.representation());
+                parseStatus = missingClosingParenthesis(pop.position, pop.element.representation());
             } else {
                 ParseStatus maybeParseStatus2 = operator.createAndAddExpressionTo(expressions, pop.position);
                 if (maybeParseStatus2.isError()) {
-                    maybeParseStatus4 = maybeParseStatus2;
+                    parseStatus = maybeParseStatus2;
                 }
             }
         }
-        return maybeParseStatus4;
+        return parseStatus;
     }
 
     private ParseStatus ensureOnlySingleExpressionRemains() {

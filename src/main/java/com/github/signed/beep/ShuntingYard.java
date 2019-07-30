@@ -70,8 +70,8 @@ class ShuntingYard {
     }
 
     private ParseStatus findOperands(int position, Operator currentOperator) {
-        while (currentOperator.hasLowerPrecedenceThan(operators.peek().element)
-                || currentOperator.hasSamePrecedenceAs(operators.peek().element) && currentOperator.isLeftAssociative()) {
+        while (currentOperator.hasLowerPrecedenceThan(previousOperator())
+                || currentOperator.hasSamePrecedenceAs(previousOperator()) && currentOperator.isLeftAssociative()) {
             Position<Operator> pop = operators.pop();
             ParseStatus parseStatus = pop.element.createAndAddExpressionTo(expressions, pop.position);
             if (parseStatus.isError()) {
@@ -80,6 +80,10 @@ class ShuntingYard {
         }
         pushPositionAt(position, currentOperator);
         return ParseStatus.success();
+    }
+
+    private Operator previousOperator() {
+        return operators.peek().element;
     }
 
     private void pushPositionAt(int position, Expression expression) {

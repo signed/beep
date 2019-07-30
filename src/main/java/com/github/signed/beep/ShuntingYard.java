@@ -12,98 +12,131 @@ import java.util.Optional;
  * This is based on a modified version of the <a href="https://en.wikipedia.org/wiki/Shunting-yard_algor">Shunting-yard algorithm</a>
  */
 class ShuntingYard {
-	private static Operator RightParenthesis = nullaryOperator(")", -1);
-	private static Operator LeftParenthesis = nullaryOperator("(", -2);
-	private static Operator Sentinel = nullaryOperator("sentinel", MIN_VALUE);
+    private static Operator RightParenthesis = nullaryOperator(")", -1);
+    private static Operator LeftParenthesis = nullaryOperator("(", -2);
+    private static Operator Sentinel = nullaryOperator("sentinel", MIN_VALUE);
 
-	private final Operators validOperators = new Operators();
-	private final Stack<Position<Expression>> expressions = new DequeStack<>();
-	private final Stack<Position<Operator>> operators = new DequeStack<>();
-	private Optional<ParseError> maybeParseError = Optional.empty();
+    private final Operators validOperators = new Operators();
+    private final Stack<Position<Expression>> expressions = new DequeStack<>();
+    private final Stack<Position<Operator>> operators = new DequeStack<>();
 
-	private List<String> tokens;
+    private final List<String> tokens;
 
-	public ShuntingYard(List<String> tokens) {
-		this.tokens = tokens;
-		pushPositionAt(-1, Sentinel);
-	}
+    public ShuntingYard(List<String> tokens) {
+        this.tokens = tokens;
+        pushPositionAt(-1, Sentinel);
+    }
 
-	public ParseResult execute() {
-		for (int i = 0; !maybeParseError.isPresent() && i < tokens.size(); ++i) {
-			String token = tokens.get(i);
-			if (LeftParenthesis.represents(token)) {
-				pushPositionAt(i, LeftParenthesis);
-			}
-			else if (RightParenthesis.represents(token)) {
-				findMatchingLeftParenthesis(i);
-			}
-			else if (validOperators.isOperator(token)) {
-				findOperands(i, token);
-			}
-			else {
-				pushPositionAt(i, tag(token));
-			}
-		}
+    public ParseResult execute() {
+        Optional<ParseError> maybeParseError1 = processTokens();
+        if (maybeParseError1.isPresent()) {
+            return ParseResult.error(maybeParseError1.get());
+        }
+        Optional<ParseError> maybeParseError2 = consumeRemainingOperators();
+        if (maybeParseError2.isPresent()) {
+            return ParseResult.error(maybeParseError2.get());
+        }
 
-		if (maybeParseError.isPresent()) {
-			return ParseResult.error(maybeParseError.get());
-		}
+        Optional<ParseError> maybeParseError3 = ensureOnlySingleExpressionRemains();
+        if (maybeParseError3.isPresent()) {
+            return ParseResult.error(maybeParseError3.get());
+        }
 
-		while (!operators.isEmpty()) {
-			Position<Operator> pop = operators.pop();
-			Operator operator = pop.element;
-			if (LeftParenthesis.equals(operator)) {
-                return ParseResult.error(missingClosingParenthesis(pop.position, pop.element.representation()));
-			}
+        return ParseResult.success(expressions.pop().element);
+    }
 
-			Optional<ParseError> maybeParseError = operator.createAndAddExpressionTo(expressions, pop.position);
-			if (maybeParseError.isPresent()) {
-				return ParseResult.error(maybeParseError.get());
-			}
-		}
+    public Optional<ParseError> ensureOnlySingleExpressionRemains() {
+        Optional<ParseError> maybeParseError3 = Optional.empty();
+        if (expressions.size() != 1) {
+            if (expressions.isEmpty()) {
+                ParseError parseError = ParseError.emptyTagExpression();
+                maybeParseError3 = Optional.of(parseError);
+            } else {
+                ParseError parseError = ParseError.missingOperator();
+                maybeParseError3 = Optional.of(parseError);
+            }
+        }
+        return maybeParseError3;
+    }
 
-		if (expressions.size() != 1) {
-			if (expressions.isEmpty()) {
-				return ParseResult.error(ParseError.emptyTagExpression());
-			}
-			return ParseResult.error(ParseError.missingOperator());
-		}
-		return ParseResult.success(expressions.pop().element);
-	}
+    public Optional<ParseError> consumeRemainingOperators() {
+        Optional<ParseError> maybeParseError4 = Optional.empty();
+        while (!maybeParseError4.isPresent() && !operators.isEmpty()) {
+            Position<Operator> pop = operators.pop();
+            Operator operator = pop.element;
+            if (LeftParenthesis.equals(operator)) {
+                maybeParseError4 = Optional.of(missingClosingParenthesis(pop.position, pop.element.representation()));
+            } else {
+                Optional<ParseError> maybeParseError2 = operator.createAndAddExpressionTo(expressions, pop.position);
+                if (maybeParseError2.isPresent()) {
+                    maybeParseError4 = maybeParseError2;
+                }
+            }
+        }
+        return maybeParseError4;
+    }
 
-    public void findOperands(int i, String token) {
-		Operator operator = validOperators.operatorFor(token);
-		while (operator.hasLowerPrecedenceThan(operators.peek().element)
-				|| operator.hasSamePrecedenceAs(operators.peek().element) && operator.isLeftAssociative()) {
-			Position<Operator> pop = operators.pop();
-			maybeParseError = pop.element.createAndAddExpressionTo(expressions, pop.position);
-		}
-		pushPositionAt(i, operator);
-	}
+    private Optional<ParseError> processTokens() {
+        Optional<ParseError> maybeParseError = Optional.empty();
+        for (int position = 0; !maybeParseError.isPresent() && position < tokens.size(); ++position) {
+            String token = tokens.get(position);
+            if (LeftParenthesis.represents(token)) {
+                pushPositionAt(position, LeftParenthesis);
+            } else if (RightParenthesis.represents(token)) {
+                maybeParseError = findMatchingLeftParenthesis(position);
+            } else if (validOperators.isOperator(token)) {
+                maybeParseError = findOperands(position, token);
+            } else {
+                pushPositionAt(position, tag(token));
+            }
+        }
+        return maybeParseError;
+    }
 
-	public void findMatchingLeftParenthesis(int position) {
-		boolean foundMatchingParenthesis = false;
-		while (!foundMatchingParenthesis && !operators.isEmpty()) {
-			Position<Operator> pop = operators.pop();
-			Operator candidate = pop.element;
-			if (LeftParenthesis.equals(candidate)) {
-				foundMatchingParenthesis = true;
-			}
-			else {
-				maybeParseError = candidate.createAndAddExpressionTo(expressions, pop.position);
-			}
-		}
-		if (!foundMatchingParenthesis) {
+    private Optional<ParseError> findOperands(int position, String token) {
+        Operator currentOperator = validOperators.operatorFor(token);
+        while (currentOperator.hasLowerPrecedenceThan(operators.peek().element)
+                || currentOperator.hasSamePrecedenceAs(operators.peek().element) && currentOperator.isLeftAssociative()) {
+            Position<Operator> pop = operators.pop();
+            Optional<ParseError> maybeParseError = pop.element.createAndAddExpressionTo(expressions, pop.position);
+            if (maybeParseError.isPresent()) {
+                return maybeParseError;
+            }
+        }
+        pushPositionAt(position, currentOperator);
+        return stepSuccessful();
+    }
+
+    private Optional<ParseError> findMatchingLeftParenthesis(int position) {
+        boolean foundMatchingParenthesis = false;
+        while (!foundMatchingParenthesis && !operators.isEmpty()) {
+            Position<Operator> pop = operators.pop();
+            Operator candidate = pop.element;
+            if (LeftParenthesis.equals(candidate)) {
+                foundMatchingParenthesis = true;
+            } else {
+                Optional<ParseError> maybeParseError = candidate.createAndAddExpressionTo(expressions, pop.position);
+                if (maybeParseError.isPresent()) {
+                    return maybeParseError;
+                }
+            }
+        }
+        if (!foundMatchingParenthesis) {
             String representation = RightParenthesis.representation();
-            maybeParseError = Optional.of(ParseError.missingOpeningParenthesis(position, representation));
-		}
-	}
+            return Optional.of(ParseError.missingOpeningParenthesis(position, representation));
+        }
+        return stepSuccessful();
+    }
+
+    public Optional<ParseError> stepSuccessful() {
+        return Optional.empty();
+    }
 
     private void pushPositionAt(int i, Expression expression) {
-		expressions.push(new Position<>(i, expression));
-	}
+        expressions.push(new Position<>(i, expression));
+    }
 
-	private void pushPositionAt(int i, Operator operator) {
-		operators.push(new Position<>(i, operator));
-	}
+    private void pushPositionAt(int i, Operator operator) {
+        operators.push(new Position<>(i, operator));
+    }
 }

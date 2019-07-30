@@ -4,11 +4,11 @@ import java.util.Collection;
 
 import com.github.signed.external.TestTag;
 
-class Expressions {
+class TagExpressions {
 
-	static Expression tag(String tag) {
+	static TagExpression tag(String tag) {
 		TestTag testTag = TestTag.create(tag);
-		return new Expression() {
+		return new TagExpression() {
 			@Override
 			public boolean evaluate(Collection<TestTag> tags) {
 				return tags.contains(testTag);
@@ -21,8 +21,8 @@ class Expressions {
 		};
 	}
 
-	static Expression not(Expression toNegate) {
-		return new Expression() {
+	static TagExpression not(TagExpression toNegate) {
+		return new TagExpression() {
 			@Override
 			public boolean evaluate(Collection<TestTag> tags) {
 				return !toNegate.evaluate(tags);
@@ -35,8 +35,8 @@ class Expressions {
 		};
 	}
 
-	static Expression and(Expression lhs, Expression rhs) {
-		return new Expression() {
+	static TagExpression and(TagExpression lhs, TagExpression rhs) {
+		return new TagExpression() {
 			@Override
 			public boolean evaluate(Collection<TestTag> tags) {
 				return lhs.evaluate(tags) && rhs.evaluate(tags);
@@ -49,8 +49,8 @@ class Expressions {
 		};
 	}
 
-	static Expression or(Expression lhs, Expression rhs) {
-		return new Expression() {
+	static TagExpression or(TagExpression lhs, TagExpression rhs) {
+		return new TagExpression() {
 			@Override
 			public boolean evaluate(Collection<TestTag> tags) {
 				return lhs.evaluate(tags) || rhs.evaluate(tags);

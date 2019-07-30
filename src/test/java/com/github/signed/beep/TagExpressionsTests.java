@@ -4,10 +4,10 @@ import static java.util.Collections.singleton;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static com.github.signed.external.TestTag.create;
-import static com.github.signed.beep.Expressions.and;
-import static com.github.signed.beep.Expressions.not;
-import static com.github.signed.beep.Expressions.or;
-import static com.github.signed.beep.Expressions.tag;
+import static com.github.signed.beep.TagExpressions.and;
+import static com.github.signed.beep.TagExpressions.not;
+import static com.github.signed.beep.TagExpressions.or;
+import static com.github.signed.beep.TagExpressions.tag;
 
 import java.util.Collections;
 import java.util.Set;
@@ -16,10 +16,10 @@ import org.junit.jupiter.api.Test;
 import com.github.signed.external.PreconditionViolationException;
 import com.github.signed.external.TestTag;
 
-class ExpressionsTests {
+class TagExpressionsTests {
 
-	private static final Expression True = tags -> true;
-	private static final Expression False = tags -> false;
+	private static final TagExpression True = tags -> true;
+	private static final TagExpression False = tags -> false;
 
 	@Test
 	void tagIsJustATestTag() {
@@ -35,7 +35,7 @@ class ExpressionsTests {
 
 	@Test
 	void tagEvaluation() {
-		Expression tagExpression = tag("foo");
+		TagExpression tagExpression = tag("foo");
 
 		assertThat(tagExpression.evaluate(singleton(create("foo")))).isTrue();
 		assertThat(tagExpression.evaluate(singleton(create("not_foo")))).isFalse();
@@ -78,7 +78,7 @@ class ExpressionsTests {
 		assertThat(or(False, True).evaluate(anyTestTags())).isTrue();
 	}
 
-	private Expression onEvaluateThrow(String message) {
+	private TagExpression onEvaluateThrow(String message) {
 		return tags -> {
 			throw new RuntimeException(message);
 		};

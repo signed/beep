@@ -3,11 +3,11 @@ package com.github.signed.beep;
 import java.util.Optional;
 
 class ParseResults {
-	static ParseResult success(Expression expression) {
+	static ParseResult success(TagExpression tagExpression) {
 		return new ParseResult() {
 			@Override
-			public Optional<Expression> expression() {
-				return Optional.of(expression);
+			public Optional<TagExpression> tagExpression() {
+				return Optional.of(tagExpression);
 			}
 		};
 	}

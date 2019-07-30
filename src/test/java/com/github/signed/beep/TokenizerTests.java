@@ -20,20 +20,20 @@ class TokenizerTests {
 
 	@Test
 	void notIsAReservedKeyword() {
-		assertThat(tokensExtractedFrom("not tag")).containsExactly("not", "tag");
-		assertThat(tokensExtractedFrom("nottag")).containsExactly("nottag");
+		assertThat(tokensExtractedFrom("! tag")).containsExactly("!", "tag");
+		assertThat(tokensExtractedFrom("!tag")).containsExactly("!", "tag");
 	}
 
 	@Test
 	void andIsAReservedKeyword() {
-		assertThat(tokensExtractedFrom("one and two")).containsExactly("one", "and", "two");
-		assertThat(tokensExtractedFrom("andtag")).containsExactly("andtag");
+		assertThat(tokensExtractedFrom("one & two")).containsExactly("one", "&", "two");
+		assertThat(tokensExtractedFrom("one&two")).containsExactly("one", "&", "two");
 	}
 
 	@Test
 	void orIsAReservedKeyword() {
-		assertThat(tokensExtractedFrom("one or two")).containsExactly("one", "or", "two");
-		assertThat(tokensExtractedFrom("ortag")).containsExactly("ortag");
+		assertThat(tokensExtractedFrom("one | two")).containsExactly("one", "|", "two");
+		assertThat(tokensExtractedFrom("one|two")).containsExactly("one", "|", "two");
 	}
 
 	@Test
@@ -41,8 +41,8 @@ class TokenizerTests {
 		assertThat(tokensExtractedFrom("()")).containsExactly("(", ")");
 		assertThat(tokensExtractedFrom("(tag)")).containsExactly("(", "tag", ")");
 		assertThat(tokensExtractedFrom("( tag )")).containsExactly("(", "tag", ")");
-		assertThat(tokensExtractedFrom("( foo and bar) or (baz and qux )")).containsExactly("(", "foo", "and", "bar",
-			")", "or", "(", "baz", "and", "qux", ")");
+		assertThat(tokensExtractedFrom("( foo &bar)| (baz& qux )")).containsExactly("(", "foo", "&", "bar",
+			")", "|", "(", "baz", "&", "qux", ")");
 	}
 
 	private List<String> tokensExtractedFrom(String expression) {

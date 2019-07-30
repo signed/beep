@@ -92,20 +92,18 @@ class ShuntingYard {
     }
 
     private ParseStatus consumeRemainingOperators() {
-        ParseStatus parseStatus = ParseStatus.NoParseError();
-        while (parseStatus.noError() && !operators.isEmpty()) {
+        while (!operators.isEmpty()) {
             Position<Operator> pop = operators.pop();
             Operator operator = pop.element;
             if (LeftParenthesis.equals(operator)) {
-                parseStatus = missingClosingParenthesis(pop.position, pop.element.representation());
-            } else {
-                ParseStatus maybeParseStatus2 = operator.createAndAddExpressionTo(expressions, pop.position);
-                if (maybeParseStatus2.isError()) {
-                    parseStatus = maybeParseStatus2;
-                }
+                return missingClosingParenthesis(pop.position, pop.element.representation());
+            }
+            ParseStatus maybeParseStatus2 = operator.createAndAddExpressionTo(expressions, pop.position);
+            if (maybeParseStatus2.isError()) {
+                return maybeParseStatus2;
             }
         }
-        return parseStatus;
+        return ParseStatus.NoParseError();
     }
 
     private ParseStatus ensureOnlySingleExpressionRemains() {

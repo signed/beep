@@ -16,7 +16,7 @@ public class ParseError {
         return Create(position, representation, "missing opening parenthesis");
     }
 
-    public static ParseError missingClosingParenthesis(int position, String representation) {
+    static ParseError missingClosingParenthesis(int position, String representation) {
         return Create(position, representation, "missing closing parenthesis");
     }
 

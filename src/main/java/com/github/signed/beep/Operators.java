@@ -4,8 +4,6 @@ import static java.util.function.Function.identity;
 import static java.util.stream.Collectors.toMap;
 import static com.github.signed.beep.Associativity.Left;
 import static com.github.signed.beep.Associativity.Right;
-import static com.github.signed.beep.ExpressionCreator.report;
-import static com.github.signed.beep.ExpressionCreator.success;
 import static com.github.signed.beep.Expressions.and;
 import static com.github.signed.beep.Expressions.not;
 import static com.github.signed.beep.Expressions.or;
@@ -20,9 +18,9 @@ class Operators {
 		if (position < rhs.position) {
 			Expression not = not(rhs.element);
 			expressions.push(new Position<>(position, not));
-			return success;
+			return ParseStatus.success();
 		}
-		return report(ParseStatus.Create(position, "!", "missing rhs operand"));
+		return ParseStatus.Create(position, "!", "missing rhs operand");
 	});
 
 	private static final Operator And = Operator.binaryOperator("&", 2, Left, (expressions, position) -> {
@@ -30,17 +28,17 @@ class Operators {
 		Position<Expression> lhs = expressions.pop();
 		if (lhs.position < position && position < rhs.position) {
 			expressions.push(new Position<>(position, and(lhs.element, rhs.element)));
-			return success;
+			return ParseStatus.success();
 		}
 
 		if (position > rhs.position) {
-			return report(ParseStatus.Create(position, "&", "missing rhs operand"));
+			return ParseStatus.Create(position, "&", "missing rhs operand");
 		}
 		if (position < lhs.position) {
-			return report(ParseStatus.missingOperatorBetween(lhs.position, lhs.element.toString(), rhs.position,
-				rhs.element.toString()));
+			return ParseStatus.missingOperatorBetween(lhs.position, lhs.element.toString(), rhs.position,
+				rhs.element.toString());
 		}
-		return report(ParseStatus.problemParsing(position, "&"));
+		return ParseStatus.problemParsing(position, "&");
 	});
 
 	private static final Operator Or = Operator.binaryOperator("|", 1, Left, (expressions, position) -> {
@@ -48,16 +46,16 @@ class Operators {
 		Position<Expression> lhs = expressions.pop();
 		if (lhs.position < position && position < rhs.position) {
 			expressions.push(new Position<>(position, or(lhs.element, rhs.element)));
-			return success;
+			return ParseStatus.success();
 		}
 		if (position > rhs.position) {
-			return report(ParseStatus.Create(position, "|", "missing rhs operand"));
+			return ParseStatus.Create(position, "|", "missing rhs operand");
 		}
 		if (position < lhs.position) {
-			return report(ParseStatus.missingOperatorBetween(lhs.position, lhs.element.toString(), rhs.position,
-				rhs.element.toString()));
+			return ParseStatus.missingOperatorBetween(lhs.position, lhs.element.toString(), rhs.position,
+				rhs.element.toString());
 		}
-		return report(ParseStatus.problemParsing(position, "|"));
+		return ParseStatus.problemParsing(position, "|");
 	});
 
 	private final Map<String, Operator> representationToOperator = Stream.of(Not, And, Or).collect(

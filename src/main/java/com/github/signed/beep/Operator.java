@@ -1,12 +1,11 @@
 package com.github.signed.beep;
 
 import static com.github.signed.beep.Associativity.Left;
-import static com.github.signed.beep.ExpressionCreator.report;
 
 class Operator {
 
 	static Operator nullaryOperator(String representation, int precedence) {
-		return new Operator(representation, precedence, 0, null, (expressions, position) -> ExpressionCreator.success);
+		return new Operator(representation, precedence, 0, null, (expressions, position) -> ParseStatus.success());
 	}
 
 	static Operator unaryOperator(String representation, int precedence, Associativity associativity,
@@ -49,7 +48,7 @@ class Operator {
 	ParseStatus createAndAddExpressionTo(Stack<Position<Expression>> expressions, int position) {
 		if (expressions.size() < arity) {
 			String message = createMissingOperandMessage(position, expressions);
-			return report(ParseStatus.Create(position, representation, message));
+			return ParseStatus.Create(position, representation, message);
 		}
 		return expressionCreator.createExpressionAndAddTo(expressions, position);
 	}

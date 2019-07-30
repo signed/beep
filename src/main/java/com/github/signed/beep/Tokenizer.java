@@ -20,12 +20,11 @@ class Tokenizer {
 	private List<Token> deriveTokensFrom(String infixTagExpression, List<String> actualTokens) {
 		int startIndex = 0;
 		List<Token> tokens = new ArrayList<>(actualTokens.size());
-		for (int position = 0; position < actualTokens.size(); ++position) {
-			String token = actualTokens.get(position);
+		for (String token : actualTokens) {
 			int foundAt = infixTagExpression.indexOf(token, startIndex);
 			int endIndex = foundAt + token.length();
 			String rawToken = infixTagExpression.substring(startIndex, endIndex);
-			tokens.add(Token.singlePosition(startIndex, position, rawToken));
+			tokens.add(new Token(startIndex, rawToken));
 			startIndex = endIndex;
 		}
 		return tokens;

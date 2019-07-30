@@ -28,7 +28,7 @@ class ShuntingYard {
 
 	ShuntingYard(List<Token> tokens) {
 		this.tokens = tokens;
-		pushOperatorAt(Token.singlePosition(-1, -1, ""), Sentinel);
+		pushOperatorAt(new Token(-1, ""), Sentinel);
 	}
 
 	public ParseResult execute() {

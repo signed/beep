@@ -27,9 +27,9 @@ class Operator {
 			Function<Expression, Expression> unaryExpression) {
 		return new Operator(representation, precedence, 1, associativity, (expressions, operatorToken) -> {
 			TokenWith<Expression> rhs = expressions.pop();
-			if (operatorToken.rightMostPosition() < rhs.token.leftMostPosition()) {
-				expressions.push(
-					new TokenWith<>(operatorToken.concatenate(rhs.token), unaryExpression.apply(rhs.element)));
+			if (operatorToken.isLeftOf(rhs.token)) {
+				Token combinedToken = operatorToken.concatenate(rhs.token);
+				expressions.push(new TokenWith<>(combinedToken, unaryExpression.apply(rhs.element)));
 				return success();
 			}
 			return missingRhsOperand(operatorToken, representation);
@@ -41,16 +41,16 @@ class Operator {
 		return new Operator(representation, precedence, 2, associativity, (expressions, operatorToken) -> {
 			TokenWith<Expression> rhs = expressions.pop();
 			TokenWith<Expression> lhs = expressions.pop();
-			if (lhs.token.rightMostPosition() < operatorToken.leftMostPosition()
-					&& operatorToken.rightMostPosition() < rhs.token.leftMostPosition()) {
-				Token combinedToken = lhs.token.concatenate(operatorToken).concatenate(rhs.token);
+			Token lhsToken = lhs.token;
+			if (lhsToken.isLeftOf(operatorToken) && operatorToken.isLeftOf(rhs.token)) {
+				Token combinedToken = lhsToken.concatenate(operatorToken).concatenate(rhs.token);
 				expressions.push(new TokenWith<>(combinedToken, binaryExpression.apply(lhs.element, rhs.element)));
 				return success();
 			}
-			if (rhs.token.rightMostPosition() < operatorToken.leftMostPosition()) {
+			if (rhs.token.isLeftOf(operatorToken)) {
 				return missingRhsOperand(operatorToken, representation);
 			}
-			if (operatorToken.leftMostPosition() < lhs.token.rightMostPosition()) {
+			if (operatorToken.isLeftOf(lhsToken)) {
 				return missingOperatorBetween(lhs, rhs);
 			}
 			return problemParsing(operatorToken, representation);
@@ -110,8 +110,7 @@ class Operator {
 			if (2 == mismatch) {
 				return "missing lhs and rhs operand";
 			}
-			return missingOneOperand(
-				operatorToken.rightMostPosition() < expressions.peek().token.leftMostPosition() ? "lhs" : "rhs");
+			return missingOneOperand(operatorToken.isLeftOf(expressions.peek().token) ? "lhs" : "rhs");
 		}
 		return "missing operand";
 	}

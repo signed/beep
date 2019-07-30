@@ -62,6 +62,7 @@ class ParserErrorTests {
                 Arguments.of("foo & (bar !)", "! at <4> missing rhs operand"),
                 Arguments.of("( foo & bar ) )", ") at <5> missing opening parenthesis"),
                 Arguments.of("( ( foo & bar )", "( at <0> missing closing parenthesis"),
+
                 Arguments.of("foo & (bar baz) |", "missing operator between bar <3> and baz <4>"),
 
                 Arguments.of("foo & (bar baz) &", "missing operator between bar <3> and baz <4>"),

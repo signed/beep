@@ -2,14 +2,14 @@ package com.github.signed.beep;
 
 import java.util.function.Supplier;
 
-public class ParseStatus {
+class ParseStatus {
 
-    static ParseStatus success() {
-        return new ParseStatus(null);
-    }
+	static ParseStatus success() {
+		return new ParseStatus(null);
+	}
 
 	static ParseStatus missingOperatorBetween(int lhsPosition, String lhsRepresentation, int rhsPosition,
-                                              String rhsRepresentation) {
+			String rhsRepresentation) {
 		return new ParseStatus("missing operator between " + lhsRepresentation + " <" + lhsPosition + "> and "
 				+ rhsRepresentation + " <" + rhsPosition + ">");
 	}
@@ -19,12 +19,12 @@ public class ParseStatus {
 	}
 
 	static ParseStatus missingOpeningParenthesis(int position, String representation) {
-        return Create(position, representation, "missing opening parenthesis");
-    }
+		return Create(position, representation, "missing opening parenthesis");
+	}
 
-    static ParseStatus missingClosingParenthesis(int position, String representation) {
-        return Create(position, representation, "missing closing parenthesis");
-    }
+	static ParseStatus missingClosingParenthesis(int position, String representation) {
+		return Create(position, representation, "missing closing parenthesis");
+	}
 
 	static ParseStatus Create(int position, String operatorRepresentation, String message) {
 		return new ParseStatus(operatorRepresentation + " at <" + position + "> " + message);
@@ -44,18 +44,18 @@ public class ParseStatus {
 		this.message = message;
 	}
 
-    public ParseStatus process(Supplier<ParseStatus> step) {
-	    if(noError()){
-            return step.get();
-        }
-        return this;
-    }
+	public ParseStatus process(Supplier<ParseStatus> step) {
+		if (noError()) {
+			return step.get();
+		}
+		return this;
+	}
 
-    public boolean noError() {
-        return null == message;
-    }
+	public boolean noError() {
+		return null == message;
+	}
 
-    public boolean isError() {
-        return !noError();
-    }
+	public boolean isError() {
+		return !noError();
+	}
 }

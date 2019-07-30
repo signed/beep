@@ -55,24 +55,18 @@ class ShuntingYard {
     }
 
     private ParseStatus findMatchingLeftParenthesis(int position) {
-        boolean foundMatchingParenthesis = false;
-        while (!foundMatchingParenthesis && !operators.isEmpty()) {
+        while (!operators.isEmpty()) {
             Position<Operator> pop = operators.pop();
             Operator candidate = pop.element;
             if (LeftParenthesis.equals(candidate)) {
-                foundMatchingParenthesis = true;
-            } else {
-                ParseStatus maybeParseStatus = candidate.createAndAddExpressionTo(expressions, pop.position);
-                if (maybeParseStatus.isError()) {
-                    return maybeParseStatus;
-                }
+                return ParseStatus.NoParseError();
+            }
+            ParseStatus maybeParseStatus = candidate.createAndAddExpressionTo(expressions, pop.position);
+            if (maybeParseStatus.isError()) {
+                return maybeParseStatus;
             }
         }
-        if (!foundMatchingParenthesis) {
-            String representation = RightParenthesis.representation();
-            return ParseStatus.missingOpeningParenthesis(position, representation);
-        }
-        return ParseStatus.NoParseError();
+        return ParseStatus.missingOpeningParenthesis(position, RightParenthesis.representation());
     }
 
     private ParseStatus findOperands(int position, String token) {

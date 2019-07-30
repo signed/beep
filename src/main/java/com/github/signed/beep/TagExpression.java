@@ -1,5 +1,13 @@
 package com.github.signed.beep;
 
+
+
+/**
+ * Factory method to parse an {@link Expression Expression}
+ * from a <em>tag expression string</em>.
+ *
+ * @since 1.1
+ */
 public class TagExpression {
 
 	///CLOVER:OFF

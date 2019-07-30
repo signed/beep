@@ -5,49 +5,54 @@ import java.util.function.Supplier;
 class ParseStatus {
 
 	static ParseStatus success() {
-		return new ParseStatus(null);
-	}
-
-	static ParseStatus missingOperatorBetween(Position<Expression> rhs, Position<Expression> lhs) {
-		return new ParseStatus("missing operator between " + format(lhs) + " and " + format(rhs));
-	}
-
-	private static String format(Position<Expression> rhs) {
-		return rhs.element.toString() + " <" + rhs.position + ">";
+		return error(null);
 	}
 
 	static ParseStatus problemParsing(int position, String representation) {
-		return Create(position, representation, "problem parsing");
+		return errorAt(position, representation, "problem parsing");
 	}
 
 	static ParseStatus missingOpeningParenthesis(int position, String representation) {
-		return Create(position, representation, "missing opening parenthesis");
+		return errorAt(position, representation, "missing opening parenthesis");
 	}
 
 	static ParseStatus missingClosingParenthesis(int position, String representation) {
-		return Create(position, representation, "missing closing parenthesis");
+		return errorAt(position, representation, "missing closing parenthesis");
 	}
 
-	static ParseStatus Create(int position, String operatorRepresentation, String message) {
-		return new ParseStatus(operatorRepresentation + " at <" + position + "> " + message);
+	static ParseStatus missingRhsOperand(int position, String representation) {
+		return errorAt(position, representation, "missing rhs operand");
+	}
+
+	static ParseStatus missingOperatorBetween(Position<Expression> rhs, Position<Expression> lhs) {
+		return error("missing operator between " + format(lhs) + " and " + format(rhs));
+	}
+
+	static ParseStatus errorAt(int position, String operatorRepresentation, String message) {
+		return error(operatorRepresentation + " at <" + position + "> " + message);
 	}
 
 	static ParseStatus missingOperator() {
-		return new ParseStatus("missing operator");
-	}
-
-	static ParseStatus missingRhsOperand(String representation, int position) {
-		return Create(position, representation, "missing rhs operand");
+		return error("missing operator");
 	}
 
 	static ParseStatus emptyTagExpression() {
-		return new ParseStatus("empty tag expression");
+		return error("empty tag expression");
 	}
 
-	final String message;
+	private static String format(Position<Expression> position) {
+		int position1 = position.position;
+		return position.element.toString() + " <" + position1 + ">";
+	}
 
-	private ParseStatus(String message) {
-		this.message = message;
+	private static ParseStatus error(String errorMessage) {
+		return new ParseStatus(errorMessage);
+	}
+
+	final String errorMessage;
+
+	private ParseStatus(String errorMessage) {
+		this.errorMessage = errorMessage;
 	}
 
 	public ParseStatus process(Supplier<ParseStatus> step) {
@@ -58,7 +63,7 @@ class ParseStatus {
 	}
 
 	public boolean noError() {
-		return null == message;
+		return null == errorMessage;
 	}
 
 	public boolean isError() {

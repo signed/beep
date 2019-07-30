@@ -1,7 +1,14 @@
 package com.github.signed.beep;
 
+
 import java.util.function.Function;
 
+
+/**
+ * Either contains a successfully parsed {@link Expression} or an <em>error message</em> describing the parse error.
+ *
+ * @since 1.1
+ */
 public class ParseResult {
 
 	static ParseResult success(Expression expression) {

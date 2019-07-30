@@ -3,11 +3,11 @@ package com.github.signed.beep;
 import java.util.Optional;
 
 interface ExpressionCreator {
-    Optional<String> Success = Optional.empty();
+    Optional<ParseError> Success = Optional.empty();
 
-    static Optional<String> ParseError(String message) {
-        return Optional.of(message);
+    static Optional<ParseError> ParseError(String message) {
+        return Optional.of(ParseError.Create(message));
     }
 
-    Optional<String> accept(Stack<Position<Expression>> expressions, int position);
+    Optional<ParseError> accept(Stack<Position<Expression>> expressions, int position);
 }

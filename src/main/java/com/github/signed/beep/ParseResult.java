@@ -5,7 +5,7 @@ import java.util.function.Function;
 
 public class ParseResult {
 
-    public static ParseResult error(String parseError) {
+    public static ParseResult error(ParseError parseError) {
         return new ParseResult(parseError, null);
     }
 
@@ -13,19 +13,19 @@ public class ParseResult {
         return new ParseResult(null, expression);
     }
 
-    private final String parseError;
+    private final ParseError parseError;
     private final Expression expression;
 
-    private ParseResult(String parseError, Expression expression) {
+    private ParseResult(ParseError parseError, Expression expression) {
         this.parseError = parseError;
         this.expression = expression;
     }
 
     public Optional<String> parseError(){
-        return Optional.ofNullable(parseError);
+        return Optional.ofNullable(parseError).map(e -> e.message);
     }
 
-    public Expression expressionOrThrow(Function<String, RuntimeException > error) {
+    public Expression expressionOrThrow(Function<ParseError, RuntimeException > error) {
         if (null != parseError) {
             throw error.apply(parseError);
         }

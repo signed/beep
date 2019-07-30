@@ -48,7 +48,7 @@ class Operator {
         return representation.equals(token);
     }
 
-    Optional<String> createAndAddExpressionTo(Stack<Position<Expression>> expressions, int position) {
+    Optional<ParseError> createAndAddExpressionTo(Stack<Position<Expression>> expressions, int position) {
         if (expressions.size() < arity) {
             return ParseError("missing operand");
         }

@@ -37,13 +37,13 @@ class Operators {
 			return report(ParseError.Create(position, "&", "missing rhs operand"));
 		}
 		if (position < lhs.position) {
-			return report(ParseError.MissingOperatorBetween(lhs.position, lhs.element.toString(), rhs.position,
+			return report(ParseError.missingOperatorBetween(lhs.position, lhs.element.toString(), rhs.position,
 				rhs.element.toString()));
 		}
-		return report(ParseError.Create(position, "&", "problem parsing"));
+        return report(ParseError.problemParsing(position, "&"));
 	});
 
-	private static final Operator Or = Operator.binaryOperator("|", 1, Left, (expressions, position) -> {
+    private static final Operator Or = Operator.binaryOperator("|", 1, Left, (expressions, position) -> {
 		Position<Expression> rhs = expressions.pop();
 		Position<Expression> lhs = expressions.pop();
 		if (lhs.position < position && position < rhs.position) {
@@ -54,10 +54,10 @@ class Operators {
 			return report(ParseError.Create(position, "|", "missing rhs operand"));
 		}
 		if (position < lhs.position) {
-			return report(ParseError.MissingOperatorBetween(lhs.position, lhs.element.toString(), rhs.position,
+			return report(ParseError.missingOperatorBetween(lhs.position, lhs.element.toString(), rhs.position,
 				rhs.element.toString()));
 		}
-		return report(ParseError.Create(position, "|", "problem parsing"));
+		return report(ParseError.problemParsing(position, "|"));
 	});
 
 	private final Map<String, Operator> representationToOperator = Stream.of(Not, And, Or).collect(

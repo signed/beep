@@ -16,63 +16,63 @@ class ParserErrorTests {
 
 	@Test
 	void cantParseExpressionFromNull() {
-		assertThat(expressionParsedFrom(null)).isEmpty();
+		assertThat(parseErrorFromParsing(null)).isNotEmpty();
 	}
 
 	@Test
 	void emptyExpression() {
-		assertThat(expressionParsedFrom("")).isEmpty();
+		assertThat(parseErrorFromParsing("")).isNotEmpty();
 	}
 
 	@Test
 	void missingClosingParenthesis() {
-		assertThat(expressionParsedFrom("(")).isEmpty();
-		assertThat(expressionParsedFrom("( foo & bar")).isEmpty();
+		assertThat(parseErrorFromParsing("(")).contains("missing closing parenthesis");
+		assertThat(parseErrorFromParsing("( foo & bar")).contains("missing closing parenthesis");
 	}
 
 	@Test
 	void missingOpeningParenthesis() {
-		assertThat(expressionParsedFrom(")")).isEmpty();
-		assertThat(expressionParsedFrom(" foo | bar)")).isEmpty();
+		assertThat(parseErrorFromParsing(")")).contains("missing opening parenthesis");
+		assertThat(parseErrorFromParsing(" foo | bar)")).contains("missing opening parenthesis");
 	}
 
 	@Test
 	void partialUnaryOperator() {
-		assertThat(expressionParsedFrom("!")).isEmpty();
+		assertThat(parseErrorFromParsing("!")).isNotEmpty();
 	}
 
 	@Test
 	void partialBinaryOperator() {
-		assertThat(expressionParsedFrom("& foo")).isEmpty();
-		assertThat(expressionParsedFrom("foo |")).isEmpty();
+		assertThat(parseErrorFromParsing("& foo")).isNotEmpty();
+		assertThat(parseErrorFromParsing("foo |")).isNotEmpty();
 	}
 
     @ParameterizedTest
     @MethodSource("data")
-    void acceptanceTests(String tagExpression) {
-        assertThat(expressionParsedFrom(tagExpression)).isEmpty();
+    void acceptanceTests(String tagExpression, String parseError) {
+        assertThat(parseErrorFromParsing(tagExpression)).contains(parseError);
     }
 
     private static Stream<Arguments> data() {
         // @formatter:off
         return Stream.of(
-                Arguments.of("foo bar |"),
-                Arguments.of("foo bar &"),
-                Arguments.of("foo & (bar !)"),
-                Arguments.of("foo & (bar baz) |"),
-                Arguments.of("foo & (bar baz) &"),
-                Arguments.of("foo & |"),
-                Arguments.of("| |"),
-                Arguments.of("foo bar"),
-                Arguments.of("( foo & bar ) )"),
-                Arguments.of("( ( foo & bar )"),
-                Arguments.of("foo !& bar"),
-                Arguments.of("foo !| bar")
+                Arguments.of("foo bar |", "hpp"),
+                Arguments.of("foo bar &", "hpp"),
+                Arguments.of("foo & (bar !)", "hmm"),
+                Arguments.of("foo & (bar baz) |", "hoo"),
+                Arguments.of("foo & (bar baz) &", "hoo"),
+                Arguments.of("foo & |", "hoo"),
+                Arguments.of("| |", "hoo"),
+                Arguments.of("foo bar", "hqq"),
+                Arguments.of("( foo & bar ) )", "missing opening parenthesis"),
+                Arguments.of("( ( foo & bar )", "missing closing parenthesis"),
+                Arguments.of("foo !& bar", "hoo"),
+                Arguments.of("foo !| bar", "hoo")
         );
         // @formatter:on
     }
 
-    private Optional<Expression> expressionParsedFrom(String tagExpression) {
-		return parser.parse(tagExpression);
+    private Optional<String> parseErrorFromParsing(String tagExpression) {
+		return parser.parse(tagExpression).parseError();
 	}
 }

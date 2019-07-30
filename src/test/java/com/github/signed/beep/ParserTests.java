@@ -60,7 +60,7 @@ class ParserTests {
 	}
     
 	private Expression expressionParsedFrom(String tagExpression) {
-		return parser.parse(tagExpression).orElseThrow(
-			() -> new RuntimeException("[" + tagExpression + "] should be parsable"));
+		return parser.parse(tagExpression).expressionOrThrow(
+			(error) -> new RuntimeException("[" + tagExpression + "] should be parsable"));
 	}
 }

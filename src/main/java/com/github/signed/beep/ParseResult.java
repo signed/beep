@@ -1,6 +1,7 @@
 package com.github.signed.beep;
 
 
+import java.util.Optional;
 import java.util.function.Function;
 
 
@@ -9,28 +10,21 @@ import java.util.function.Function;
  *
  * @since 1.1
  */
-public class ParseResult {
+public interface ParseResult {
 
-	static ParseResult success(Expression expression) {
-		return new ParseResult(expression, null);
-	}
-
-	static ParseResult error(String errorMessage) {
-		return new ParseResult(null, errorMessage);
-	}
-
-	private final String errorMessage;
-	private final Expression expression;
-
-	private ParseResult(Expression expression, String errorMessage) {
-		this.errorMessage = errorMessage;
-		this.expression = expression;
-	}
-
-	public Expression expressionOrThrow(Function<String, RuntimeException> error) {
-		if (null != errorMessage) {
-			throw error.apply(errorMessage);
+	default Expression expressionOrThrow(Function<String, RuntimeException> error) {
+		if (errorMessage().isPresent()) {
+			throw error.apply(errorMessage().get());
 		}
-		return expression;
+		return expression().get();
 	}
+
+	default Optional<String> errorMessage() {
+		return Optional.empty();
+	}
+
+	default Optional<Expression> expression() {
+		return Optional.empty();
+	}
+
 }

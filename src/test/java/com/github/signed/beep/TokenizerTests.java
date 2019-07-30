@@ -63,7 +63,7 @@ class TokenizerTests {
 	}
 
 	private Stream<Integer> startIndicesExtractedFrom(String expression) {
-		return tokensExtractedFrom(expression).map(token -> token.start);
+		return tokensExtractedFrom(expression).map(token -> token.startIndex);
 	}
 
 	private Stream<String> rawStringsExtractedFrom(String expression) {
@@ -71,10 +71,10 @@ class TokenizerTests {
 	}
 
 	private List<String> tokenStringsExtractedFrom(String expression) {
-		return tokensExtractedFrom(expression).map(token -> token.string).collect(toList());
+		return tokensExtractedFrom(expression).map(token -> token.string()).collect(toList());
 	}
 
-	private Stream<Tokenizer.Token> tokensExtractedFrom(String expression) {
+	private Stream<Token> tokensExtractedFrom(String expression) {
 		return new Tokenizer().tokenize(expression).stream();
 	}
 }

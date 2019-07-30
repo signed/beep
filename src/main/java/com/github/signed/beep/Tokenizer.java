@@ -9,21 +9,6 @@ import java.util.stream.Collectors;
 
 class Tokenizer {
 
-	static class Token{
-
-		final int position;
-		final String string;
-		final String rawString;
-		final int start;
-
-		Token(int position, String string, String rawToken, int startIndex) {
-			this.position = position;
-			this.string = string;
-			rawString = rawToken;
-			start = startIndex;
-		}
-	}
-
 	List<Token> tokenize(String infixTagExpression) {
 		if (null == infixTagExpression) {
 			return emptyList();
@@ -40,7 +25,7 @@ class Tokenizer {
 			int foundAt = infixTagExpression.indexOf(token, startIndex);
 			int endIndex = foundAt + token.length();
 			String rawToken = infixTagExpression.substring(startIndex, endIndex);
-			tokens.add(new Token(position, token, rawToken, startIndex));
+			tokens.add(new Token(startIndex, position, rawToken));
 			startIndex = endIndex;
 		}
 		return tokens;

@@ -25,9 +25,9 @@ class ShuntingYard {
 	private final Stack<Position<Expression>> expressions = new DequeStack<>();
 	private final Stack<Position<Operator>> operators = new DequeStack<>();
 
-	private final List<Tokenizer.Token> tokens;
+	private final List<Token> tokens;
 
-	ShuntingYard(List<Tokenizer.Token> tokens) {
+	ShuntingYard(List<Token> tokens) {
 		this.tokens = tokens;
 		pushOperatorAt(-1, Sentinel);
 	}
@@ -53,19 +53,19 @@ class ShuntingYard {
 	}
 
 	private ParseStatus processTokenAt(int position) {
-		Tokenizer.Token token = tokens.get(position);
-		if (LeftParenthesis.represents(token.string)) {
+		Token token = tokens.get(position);
+		if (LeftParenthesis.represents(token.string())) {
 			pushOperatorAt(position, LeftParenthesis);
 			return success();
 		}
-		if (RightParenthesis.represents(token.string)) {
+		if (RightParenthesis.represents(token.string())) {
 			return findMatchingLeftParenthesis(position);
 		}
-		if (validOperators.isOperator(token.string)) {
-			Operator operator = validOperators.operatorFor(token.string);
+		if (validOperators.isOperator(token.string())) {
+			Operator operator = validOperators.operatorFor(token.string());
 			return findOperands(position, operator);
 		}
-		pushExpressionAt(position, tag(token.string));
+		pushExpressionAt(position, tag(token.string()));
 		return success();
 	}
 

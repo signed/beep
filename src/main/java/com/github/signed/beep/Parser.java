@@ -1,13 +1,14 @@
 package com.github.signed.beep;
 
 import java.util.List;
+import java.util.Optional;
 
 import static java.lang.Integer.MIN_VALUE;
 import static com.github.signed.beep.Expressions.tag;
 import static com.github.signed.beep.Operator.nullaryOperator;
 
 /**
- * The parser is based on a modified version of the <a href="https://en.wikipedia.org/wiki/Shunting-yard_algorithm">Shunting-yard algorithm</a>
+ * The parser is based on a modified version of the <a href="https://en.wikipedia.org/wiki/Shunting-yard_algor">Shunting-yard algorithm</a>
  */
 public class Parser {
     private static Operator RightParenthesis = nullaryOperator(")", -1);
@@ -57,8 +58,9 @@ public class Parser {
                         if (LeftParenthesis.equals(candidate)) {
                             foundMatchingBracket = true;
                         } else {
-                            if (!candidate.createAndAddExpressionTo(expressions, pop.index)) {
-                                return ParseResult.error("hmm");
+                            Optional<String> maybeParseError = candidate.createAndAddExpressionTo(expressions, pop.index);
+                            if (maybeParseError.isPresent()) {
+                                return ParseResult.error(maybeParseError.get());
                             }
                         }
                     }
@@ -70,8 +72,9 @@ public class Parser {
                     while (operator.hasLowerPrecedenceThan(operators.peek().element)
                             || operator.hasSamePrecedenceAs(operators.peek().element) && operator.isLeftAssociative()) {
                         Position<Operator> pop = operators.pop();
-                        if (!pop.element.createAndAddExpressionTo(expressions, pop.index)) {
-                            return ParseResult.error("hoo");
+                        Optional<String> maybeParseError = pop.element.createAndAddExpressionTo(expressions, pop.index);
+                        if (maybeParseError.isPresent()) {
+                            return ParseResult.error(maybeParseError.get());
                         }
                     }
                     pushPositionAt(i, operator);
@@ -87,7 +90,7 @@ public class Parser {
                     return ParseResult.error("missing closing parenthesis");
                 }
 
-                if (!operator.createAndAddExpressionTo(expressions,pop.index)) {
+                if (!operator.createAndAddExpressionToOld(expressions,pop.index)) {
                     return ParseResult.error("hpp");
                 }
             }

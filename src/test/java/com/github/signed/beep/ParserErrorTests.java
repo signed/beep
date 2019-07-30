@@ -59,15 +59,15 @@ class ParserErrorTests {
                 Arguments.of("foo bar", "missing operator"),
                 Arguments.of("foo bar |", "hpp"),
                 Arguments.of("foo bar &", "hpp"),
-                Arguments.of("foo & (bar !)", "hmm"),
-                Arguments.of("foo & (bar baz) |", "hoo"),
-                Arguments.of("foo & (bar baz) &", "hoo"),
-                Arguments.of("foo & |", "hoo"),
-                Arguments.of("| |", "hoo"),
+                Arguments.of("foo & (bar !)", "! missing operand"),
+                Arguments.of("foo & (bar baz) |", "problem parsing and"),
+                Arguments.of("foo & (bar baz) &", "problem parsing and"),
+                Arguments.of("foo & |", "missing operand"),
+                Arguments.of("| |", "missing operand"),
                 Arguments.of("( foo & bar ) )", "missing opening parenthesis"),
                 Arguments.of("( ( foo & bar )", "missing closing parenthesis"),
-                Arguments.of("foo !& bar", "hoo"),
-                Arguments.of("foo !| bar", "hoo")
+                Arguments.of("foo !& bar", "! missing operand"),
+                Arguments.of("foo !| bar", "! missing operand")
         );
         // @formatter:on
     }

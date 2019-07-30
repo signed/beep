@@ -1,11 +1,13 @@
 package com.github.signed.beep;
 
+import java.util.Optional;
+
 import static com.github.signed.beep.Associativity.Left;
 
 class Operator {
 
     static Operator nullaryOperator(String representation, int precedence) {
-        return new Operator(representation, precedence, 0, null, (expressions, position) -> true);
+        return new Operator(representation, precedence, 0, null, (expressions, position) -> ExpressionCreator.Success);
     }
 
     static Operator unaryOperator(String representation, int precedence, Associativity associativity,
@@ -45,9 +47,13 @@ class Operator {
         return representation.equals(token);
     }
 
-    boolean createAndAddExpressionTo(Stack<Position<Expression>> expressions, int position) {
+    boolean createAndAddExpressionToOld(Stack<Position<Expression>> expressions, int position) {
+        return !createAndAddExpressionTo(expressions, position).isPresent();
+    }
+
+    Optional<String> createAndAddExpressionTo(Stack<Position<Expression>> expressions, int position) {
         if (expressions.size() < arity) {
-            return false;
+            return Optional.of("missing operand");
         }
         return expressionCreator.accept(expressions, position);
     }

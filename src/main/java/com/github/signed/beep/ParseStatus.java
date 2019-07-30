@@ -24,12 +24,12 @@ class ParseStatus {
 		return errorAt(position, representation, "missing rhs operand");
 	}
 
-	static ParseStatus missingOperatorBetween(Position<Expression> lhs, Position<Expression> rhs) {
-		return error("missing operator between " + format(lhs) + " and " + format(rhs));
+	static ParseStatus errorAt(int position, String operatorRepresentation, String message) {
+		return error(operatorRepresentation + " at " + format(position) + " " + message);
 	}
 
-	static ParseStatus errorAt(int position, String operatorRepresentation, String message) {
-		return error(operatorRepresentation + " at <" + position + "> " + message);
+	static ParseStatus missingOperatorBetween(Position<Expression> lhs, Position<Expression> rhs) {
+		return error("missing operator between " + format(lhs) + " and " + format(rhs));
 	}
 
 	static ParseStatus missingOperator() {
@@ -41,8 +41,11 @@ class ParseStatus {
 	}
 
 	private static String format(Position<Expression> position) {
-		int position1 = position.position;
-		return position.element.toString() + " <" + position1 + ">";
+		return position.element.toString() + " " + format(position.position);
+	}
+
+	private static String format(int position) {
+		return "<" + position + ">";
 	}
 
 	private static ParseStatus error(String errorMessage) {

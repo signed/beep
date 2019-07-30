@@ -57,7 +57,7 @@ class ParserErrorTests {
         // @formatter:off
         return Stream.of(
                 Arguments.of("foo bar", "missing operator"),
-                Arguments.of("foo bar |", "problem parsing or"),
+                Arguments.of("foo bar |", "| at <2> missing rhs operand"),
                 Arguments.of("foo bar &", "problem parsing and"),
                 Arguments.of("foo & (bar !)", "! missing operand"),
                 Arguments.of("foo & (bar baz) |", "problem parsing and"),

@@ -43,6 +43,9 @@ class Operators {
             expressions.push(new Position<>(position, or(lhs.element, rhs.element)));
             return Success;
         }
+        if (position > rhs.index) {
+            return ParseError("| at <" + position + "> missing rhs operand");
+        }
         return ParseError("problem parsing or");
     });
 

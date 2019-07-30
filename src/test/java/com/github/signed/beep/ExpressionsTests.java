@@ -13,7 +13,7 @@ import java.util.Collections;
 import java.util.Set;
 
 import org.junit.jupiter.api.Test;
-import org.junit.platform.commons.util.PreconditionViolationException;
+import com.github.signed.external.PreconditionViolationException;
 import com.github.signed.external.TestTag;
 
 class ExpressionsTests {
@@ -24,6 +24,13 @@ class ExpressionsTests {
 	@Test
 	void tagIsJustATestTag() {
 		assertThat(tag("foo")).hasToString("foo");
+	}
+
+	@Test
+	void rejectInvalidTestTags() {
+		RuntimeException expected = assertThrows(PreconditionViolationException.class,
+			() -> tag("tags with spaces are not allowed"));
+		assertThat(expected).hasMessageContaining("tags with spaces are not allowed");
 	}
 
 	@Test

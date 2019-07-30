@@ -11,7 +11,11 @@
 package com.github.signed.external;
 
 import java.io.Serializable;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
 
 /**
  * Immutable value object for a <em>tag</em> that is assigned to a test or
@@ -22,6 +26,26 @@ import java.util.Objects;
  */
 public final class TestTag implements Serializable {
 
+	private static boolean isValid(String name) {
+		if (name == null) {
+			return false;
+		}
+		name = name.trim();
+
+		return !name.isEmpty() && //
+				StringUtils.doesNotContainWhitespace(name) && //
+				StringUtils.doesNotContainIsoControlCharacter(name) && //
+				doesNotContainReservedCharacter(name);
+	}
+
+	private static final Set<String> RESERVED_CHARACTERS = Collections.unmodifiableSet(
+			new HashSet<>(Arrays.asList(",", "(", ")", "&", "|", "!")));
+
+	private static boolean doesNotContainReservedCharacter(String str) {
+		return RESERVED_CHARACTERS.stream().noneMatch(str::contains);
+	}
+
+
 	private static final long serialVersionUID = 1L;
 
 	private final String name;
@@ -31,6 +55,8 @@ public final class TestTag implements Serializable {
 	}
 
 	private TestTag(String name) {
+		Preconditions.condition(TestTag.isValid(name),
+				() -> String.format("Tag name [%s] must be syntactically valid", name));
 		this.name = name.trim();
 	}
 

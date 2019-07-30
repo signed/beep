@@ -3,7 +3,11 @@ package com.github.signed.beep;
 import static java.lang.Integer.MIN_VALUE;
 import static com.github.signed.beep.Expressions.tag;
 import static com.github.signed.beep.Operator.nullaryOperator;
+import static com.github.signed.beep.ParseStatus.emptyTagExpression;
 import static com.github.signed.beep.ParseStatus.missingClosingParenthesis;
+import static com.github.signed.beep.ParseStatus.missingOpeningParenthesis;
+import static com.github.signed.beep.ParseStatus.missingOperator;
+import static com.github.signed.beep.ParseStatus.success;
 
 import java.util.List;
 
@@ -23,7 +27,7 @@ class ShuntingYard {
 
 	ShuntingYard(List<String> tokens) {
 		this.tokens = tokens;
-		pushPositionAt(-1, Sentinel);
+		pushOperatorAt(-1, Sentinel);
 	}
 
 	public ParseResult execute() {
@@ -39,89 +43,94 @@ class ShuntingYard {
 	}
 
 	private ParseStatus processTokens() {
-		ParseStatus parseStatus = ParseStatus.success();
-		for (int position = 0; parseStatus.noError() && position < tokens.size(); ++position) {
-			String token = tokens.get(position);
-			if (LeftParenthesis.represents(token)) {
-				pushPositionAt(position, LeftParenthesis);
-			}
-			else if (RightParenthesis.represents(token)) {
-				parseStatus = findMatchingLeftParenthesis(position);
-			}
-			else if (validOperators.isOperator(token)) {
-				Operator operator = validOperators.operatorFor(token);
-				parseStatus = findOperands(position, operator);
-			}
-			else {
-				pushPositionAt(position, tag(token));
-			}
+		ParseStatus parseStatus = success();
+		for (int position = 0; parseStatus.isSuccess() && position < tokens.size(); ++position) {
+			parseStatus = processTokenAt(position);
 		}
 		return parseStatus;
 	}
 
+	private ParseStatus processTokenAt(int position) {
+		String token = tokens.get(position);
+		if (LeftParenthesis.represents(token)) {
+			pushOperatorAt(position, LeftParenthesis);
+			return success();
+		}
+		if (RightParenthesis.represents(token)) {
+			return findMatchingLeftParenthesis(position);
+		}
+		if (validOperators.isOperator(token)) {
+			Operator operator = validOperators.operatorFor(token);
+			return findOperands(position, operator);
+		}
+		pushExpressionAt(position, tag(token));
+		return success();
+	}
+
 	private ParseStatus findMatchingLeftParenthesis(int position) {
 		while (!operators.isEmpty()) {
-			Position<Operator> pop = operators.pop();
-			Operator candidate = pop.element;
-			if (LeftParenthesis.equals(candidate)) {
-				return ParseStatus.success();
+			Position<Operator> positionWithOperator = operators.pop();
+			Operator operator = positionWithOperator.element;
+			if (LeftParenthesis.equals(operator)) {
+				return success();
 			}
-			ParseStatus parseStatus = candidate.createAndAddExpressionTo(expressions, pop.position);
+			ParseStatus parseStatus = operator.createAndAddExpressionTo(expressions, positionWithOperator.position);
 			if (parseStatus.isError()) {
 				return parseStatus;
 			}
 		}
-		return ParseStatus.missingOpeningParenthesis(position, RightParenthesis.representation());
+		return missingOpeningParenthesis(position, RightParenthesis.representation());
 	}
 
 	private ParseStatus findOperands(int position, Operator currentOperator) {
 		while (currentOperator.hasLowerPrecedenceThan(previousOperator())
 				|| currentOperator.hasSamePrecedenceAs(previousOperator()) && currentOperator.isLeftAssociative()) {
-			Position<Operator> pop = operators.pop();
-			ParseStatus parseStatus = pop.element.createAndAddExpressionTo(expressions, pop.position);
+			Position<Operator> positionWithOperator = operators.pop();
+			ParseStatus parseStatus = positionWithOperator.element.createAndAddExpressionTo(expressions,
+				positionWithOperator.position);
 			if (parseStatus.isError()) {
 				return parseStatus;
 			}
 		}
-		pushPositionAt(position, currentOperator);
-		return ParseStatus.success();
+		pushOperatorAt(position, currentOperator);
+		return success();
 	}
 
 	private Operator previousOperator() {
 		return operators.peek().element;
 	}
 
-	private void pushPositionAt(int position, Expression expression) {
+	private void pushExpressionAt(int position, Expression expression) {
 		expressions.push(new Position<>(position, expression));
 	}
 
-	private void pushPositionAt(int position, Operator operator) {
+	private void pushOperatorAt(int position, Operator operator) {
 		operators.push(new Position<>(position, operator));
 	}
 
 	private ParseStatus consumeRemainingOperators() {
 		while (!operators.isEmpty()) {
-			Position<Operator> pop = operators.pop();
-			Operator operator = pop.element;
+			Position<Operator> positionWithOperator = operators.pop();
+			Operator operator = positionWithOperator.element;
 			if (LeftParenthesis.equals(operator)) {
-				return missingClosingParenthesis(pop.position, pop.element.representation());
+				return missingClosingParenthesis(positionWithOperator.position, operator.representation());
 			}
-			ParseStatus maybeParseStatus2 = operator.createAndAddExpressionTo(expressions, pop.position);
-			if (maybeParseStatus2.isError()) {
-				return maybeParseStatus2;
+			ParseStatus parseStatus = operator.createAndAddExpressionTo(expressions, positionWithOperator.position);
+			if (parseStatus.isError()) {
+				return parseStatus;
 			}
 		}
-		return ParseStatus.success();
+		return success();
 	}
 
 	private ParseStatus ensureOnlySingleExpressionRemains() {
 		if (expressions.size() == 1) {
-			return ParseStatus.success();
+			return success();
 		}
 		if (expressions.isEmpty()) {
-			return ParseStatus.emptyTagExpression();
+			return emptyTagExpression();
 		}
-		return ParseStatus.missingOperator();
+		return missingOperator();
 	}
 
 }

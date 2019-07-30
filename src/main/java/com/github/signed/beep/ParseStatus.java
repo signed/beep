@@ -59,17 +59,17 @@ class ParseStatus {
 	}
 
 	public ParseStatus process(Supplier<ParseStatus> step) {
-		if (noError()) {
+		if (isSuccess()) {
 			return step.get();
 		}
 		return this;
 	}
 
-	public boolean noError() {
-		return null == errorMessage;
+	public boolean isError() {
+		return !isSuccess();
 	}
 
-	public boolean isError() {
-		return !noError();
+	public boolean isSuccess() {
+		return null == errorMessage;
 	}
 }

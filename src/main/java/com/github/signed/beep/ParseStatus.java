@@ -8,15 +8,15 @@ class ParseStatus {
 		return new ParseStatus(null);
 	}
 
-    static ParseStatus missingOperatorBetween(Position<Expression> rhs, Position<Expression> lhs) {
-        return new ParseStatus("missing operator between " + format(lhs) + " and " + format(rhs));
-    }
+	static ParseStatus missingOperatorBetween(Position<Expression> rhs, Position<Expression> lhs) {
+		return new ParseStatus("missing operator between " + format(lhs) + " and " + format(rhs));
+	}
 
-    private static String format(Position<Expression> rhs) {
-        return rhs.element.toString() + " <" + rhs.position + ">";
-    }
+	private static String format(Position<Expression> rhs) {
+		return rhs.element.toString() + " <" + rhs.position + ">";
+	}
 
-    static ParseStatus problemParsing(int position, String representation) {
+	static ParseStatus problemParsing(int position, String representation) {
 		return Create(position, representation, "problem parsing");
 	}
 
@@ -36,9 +36,9 @@ class ParseStatus {
 		return new ParseStatus("missing operator");
 	}
 
-    static ParseStatus missingRhsOperand(String representation, int position) {
-        return Create(position, representation, "missing rhs operand");
-    }
+	static ParseStatus missingRhsOperand(String representation, int position) {
+		return Create(position, representation, "missing rhs operand");
+	}
 
 	static ParseStatus emptyTagExpression() {
 		return new ParseStatus("empty tag expression");
@@ -50,7 +50,7 @@ class ParseStatus {
 		this.message = message;
 	}
 
-    public ParseStatus process(Supplier<ParseStatus> step) {
+	public ParseStatus process(Supplier<ParseStatus> step) {
 		if (noError()) {
 			return step.get();
 		}

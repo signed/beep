@@ -2,11 +2,7 @@ package com.github.signed.beep;
 
 import java.util.List;
 
-public class Parser {
-
-	public static ParseResult parseExpressionFrom(String infixTagExpression) {
-		return new Parser().parse(infixTagExpression);
-	}
+class Parser {
 
 	private final Tokenizer tokenizer = new Tokenizer();
 

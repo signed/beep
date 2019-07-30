@@ -1,12 +1,12 @@
 package com.github.signed.beep;
 
-import java.util.Map;
-import java.util.stream.Stream;
-
 import static java.util.function.Function.identity;
 import static java.util.stream.Collectors.toMap;
 import static com.github.signed.beep.Associativity.Left;
 import static com.github.signed.beep.Associativity.Right;
+
+import java.util.Map;
+import java.util.stream.Stream;
 
 class Operators {
 

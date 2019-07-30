@@ -45,17 +45,17 @@ public class ParseStatus {
 	}
 
     public ParseStatus process(Supplier<ParseStatus> step) {
-	    if(noParseError()){
+	    if(noError()){
             return step.get();
         }
         return this;
     }
 
-    public boolean noParseError() {
+    public boolean noError() {
         return null == message;
     }
 
     public boolean isError() {
-        return !noParseError();
+        return !noError();
     }
 }

@@ -38,20 +38,41 @@ class ShuntingYard {
     }
 
     private ParseStatus processTokens() {
-        ParseStatus maybeParseStatus = ParseStatus.NoParseError();
-        for (int position = 0; maybeParseStatus.noParseError() && position < tokens.size(); ++position) {
+        ParseStatus parseStatus = ParseStatus.NoParseError();
+        for (int position = 0; parseStatus.noError() && position < tokens.size(); ++position) {
             String token = tokens.get(position);
             if (LeftParenthesis.represents(token)) {
                 pushPositionAt(position, LeftParenthesis);
             } else if (RightParenthesis.represents(token)) {
-                maybeParseStatus = findMatchingLeftParenthesis(position);
+                parseStatus = findMatchingLeftParenthesis(position);
             } else if (validOperators.isOperator(token)) {
-                maybeParseStatus = findOperands(position, token);
+                parseStatus = findOperands(position, token);
             } else {
                 pushPositionAt(position, tag(token));
             }
         }
-        return maybeParseStatus;
+        return parseStatus;
+    }
+
+    private ParseStatus findMatchingLeftParenthesis(int position) {
+        boolean foundMatchingParenthesis = false;
+        while (!foundMatchingParenthesis && !operators.isEmpty()) {
+            Position<Operator> pop = operators.pop();
+            Operator candidate = pop.element;
+            if (LeftParenthesis.equals(candidate)) {
+                foundMatchingParenthesis = true;
+            } else {
+                ParseStatus maybeParseStatus = candidate.createAndAddExpressionTo(expressions, pop.position);
+                if (maybeParseStatus.isError()) {
+                    return maybeParseStatus;
+                }
+            }
+        }
+        if (!foundMatchingParenthesis) {
+            String representation = RightParenthesis.representation();
+            return ParseStatus.missingOpeningParenthesis(position, representation);
+        }
+        return ParseStatus.NoParseError();
     }
 
     private ParseStatus findOperands(int position, String token) {
@@ -78,7 +99,7 @@ class ShuntingYard {
 
     private ParseStatus consumeRemainingOperators() {
         ParseStatus maybeParseStatus4 = ParseStatus.NoParseError();
-        while (maybeParseStatus4.noParseError() && !operators.isEmpty()) {
+        while (maybeParseStatus4.noError() && !operators.isEmpty()) {
             Position<Operator> pop = operators.pop();
             Operator operator = pop.element;
             if (LeftParenthesis.equals(operator)) {
@@ -94,36 +115,13 @@ class ShuntingYard {
     }
 
     private ParseStatus ensureOnlySingleExpressionRemains() {
-        ParseStatus maybeParseStatus3 = ParseStatus.NoParseError();
-        if (expressions.size() != 1) {
-            if (expressions.isEmpty()) {
-                maybeParseStatus3 = ParseStatus.emptyTagExpression();
-            } else {
-                maybeParseStatus3 = ParseStatus.missingOperator();
-            }
+        if (expressions.size() == 1) {
+            return ParseStatus.NoParseError();
         }
-        return maybeParseStatus3;
-    }
-
-    private ParseStatus findMatchingLeftParenthesis(int position) {
-        boolean foundMatchingParenthesis = false;
-        while (!foundMatchingParenthesis && !operators.isEmpty()) {
-            Position<Operator> pop = operators.pop();
-            Operator candidate = pop.element;
-            if (LeftParenthesis.equals(candidate)) {
-                foundMatchingParenthesis = true;
-            } else {
-                ParseStatus maybeParseStatus = candidate.createAndAddExpressionTo(expressions, pop.position);
-                if (maybeParseStatus.isError()) {
-                    return maybeParseStatus;
-                }
-            }
+        if (expressions.isEmpty()) {
+            return ParseStatus.emptyTagExpression();
         }
-        if (!foundMatchingParenthesis) {
-            String representation = RightParenthesis.representation();
-            return ParseStatus.missingOpeningParenthesis(position, representation);
-        }
-        return ParseStatus.NoParseError();
+        return ParseStatus.missingOperator();
     }
 
 }

@@ -15,7 +15,7 @@ class ParserTests {
 
 	@Test
 	void notHasHigherPrecedenceThanAnd() {
-		assertThat(expressionParsedFrom("! foo & bar")).hasToString("(!(foo) & bar)");
+		assertThat(expressionParsedFrom("! foo & bar")).hasToString("(!foo & bar)");
 	}
 
 	@Test
@@ -25,7 +25,7 @@ class ParserTests {
 
 	@Test
 	void notIsRightAssociative() {
-		assertThat(expressionParsedFrom("! ! foo")).hasToString("!(!(foo))");
+		assertThat(expressionParsedFrom("foo &! bar")).hasToString("(foo & !bar)");
 	}
 
 	@Test
@@ -48,10 +48,10 @@ class ParserTests {
 		// @formatter:off
 		return Stream.of(
 				Arguments.of("foo", "foo"),
-				Arguments.of("! foo", "!(foo)"),
+				Arguments.of("! foo", "!foo"),
 				Arguments.of("foo & bar", "(foo & bar)"),
 				Arguments.of("foo | bar", "(foo | bar)"),
-				Arguments.of("( ! foo & bar | baz)", "((!(foo) & bar) | baz)")
+				Arguments.of("( ! foo & bar | baz)", "((!foo & bar) | baz)")
 		);
 		// @formatter:on
 	}

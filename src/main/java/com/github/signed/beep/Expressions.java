@@ -30,7 +30,7 @@ class Expressions {
 
 			@Override
 			public String toString() {
-				return "!(" + toNegate + ")";
+				return "!" + toNegate + "";
 			}
 		};
 	}

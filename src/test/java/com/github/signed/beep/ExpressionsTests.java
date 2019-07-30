@@ -35,8 +35,10 @@ class ExpressionsTests {
 	}
 
 	@Test
-	void encloseNotWithBrackets() {
-		assertThat(not(tag("foo"))).hasToString("!(foo)");
+	void justConcatenateNot() {
+		assertThat(not(tag("foo"))).hasToString("!foo");
+		assertThat(not(and(tag("foo"), tag("bar")))).hasToString("!(foo & bar)");
+		assertThat(not(or(tag("foo"), tag("bar")))).hasToString("!(foo | bar)");
 	}
 
 	@Test

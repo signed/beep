@@ -41,8 +41,8 @@ class TokenizerTests {
 		assertThat(tokensExtractedFrom("()")).containsExactly("(", ")");
 		assertThat(tokensExtractedFrom("(tag)")).containsExactly("(", "tag", ")");
 		assertThat(tokensExtractedFrom("( tag )")).containsExactly("(", "tag", ")");
-		assertThat(tokensExtractedFrom("( foo &bar)| (baz& qux )")).containsExactly("(", "foo", "&", "bar",
-			")", "|", "(", "baz", "&", "qux", ")");
+		assertThat(tokensExtractedFrom("( foo &bar)| (baz& qux )")).containsExactly("(", "foo", "&", "bar", ")", "|",
+			"(", "baz", "&", "qux", ")");
 	}
 
 	private List<String> tokensExtractedFrom(String expression) {

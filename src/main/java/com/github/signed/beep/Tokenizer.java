@@ -11,13 +11,7 @@ class Tokenizer {
 		if (null == infixTagExpression) {
 			return Collections.emptyList();
 		}
-		String[] parts = infixTagExpression
-                .replaceAll("\\(", " ( ")
-                .replaceAll("\\)", " ) ")
-                .replaceAll("!", " ! ")
-                .replaceAll("&", " & ")
-                .replaceAll("\\|", " | ")
-                .split("\\s");
+		String[] parts = infixTagExpression.replaceAll("([()!|&])", " $1 ").split("\\s");
 		return Arrays.stream(parts).filter(part -> !part.isEmpty()).collect(Collectors.toList());
 	}
 

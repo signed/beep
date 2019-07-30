@@ -18,17 +18,21 @@ class Token {
 		return startIndex + rawString.indexOf(string());
 	}
 
-	public int endIndex() {
-		return startIndex + rawString.length() -1;
+	public boolean isLeftOf(Token token) {
+		return lastCharacterIndex() < token.startIndex;
+	}
+
+	public int lastCharacterIndex() {
+		return endIndexExclusive() - 1;
+	}
+
+	public int endIndexExclusive() {
+		return startIndex + rawString.length();
 	}
 
 	public Token concatenate(Token rightOfThis) {
 		String concatenatedRawString = this.rawString + rightOfThis.rawString;
 		return new Token(startIndex, concatenatedRawString);
-	}
-
-	public boolean isLeftOf(Token token) {
-		return endIndex() < token.startIndex;
 	}
 
 }

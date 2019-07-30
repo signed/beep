@@ -29,7 +29,7 @@ class ParseStatus {
 	}
 
 	static ParseStatus missingOperatorBetween(TokenWith<Expression> lhs, TokenWith<Expression> rhs) {
-		String lhsString = lhs.element.toString() + " " + format(lhs.token.endIndex());
+		String lhsString = lhs.element.toString() + " " + format(lhs.token.lastCharacterIndex());
 		String rhsString = rhs.element.toString() + " " + format(rhs.token.trimmedTokenStartIndex());
 		return error("missing operator between " + lhsString + " and " + rhsString);
 	}

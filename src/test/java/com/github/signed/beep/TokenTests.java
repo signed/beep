@@ -16,10 +16,17 @@ class TokenTests {
 	}
 
 	@Test
-	void endIndex() {
-		assertThat(new Token(0, "!").endIndex()).isEqualTo(0);
-		assertThat(new Token(0, "  !").endIndex()).isEqualTo(2);
-		assertThat(new Token(7, "!").endIndex()).isEqualTo(7);
+	void endIndexExclusive() {
+		assertThat(new Token(0, "!").endIndexExclusive()).isEqualTo(1);
+		assertThat(new Token(0, "  !").endIndexExclusive()).isEqualTo(3);
+		assertThat(new Token(7, "!").endIndexExclusive()).isEqualTo(8);
+	}
+
+	@Test
+	void lastCharacterIndex() {
+		assertThat(new Token(0, "!").lastCharacterIndex()).isEqualTo(0);
+		assertThat(new Token(0, "  !").lastCharacterIndex()).isEqualTo(2);
+		assertThat(new Token(7, "!").lastCharacterIndex()).isEqualTo(7);
 	}
 
 	@Test

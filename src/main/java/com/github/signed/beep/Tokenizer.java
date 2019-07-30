@@ -17,12 +17,12 @@ class Tokenizer {
 		return deriveTokensFrom(infixTagExpression, trimmedTokenStringsFrom(infixTagExpression));
 	}
 
-	private List<Token> deriveTokensFrom(String infixTagExpression, List<String> actualTokens) {
+	private List<Token> deriveTokensFrom(String infixTagExpression, List<String> trimmedTokens) {
 		int startIndex = 0;
-		List<Token> tokens = new ArrayList<>(actualTokens.size());
-		for (String token : actualTokens) {
-			int foundAt = infixTagExpression.indexOf(token, startIndex);
-			int endIndex = foundAt + token.length();
+		List<Token> tokens = new ArrayList<>(trimmedTokens.size());
+		for (String trimmedToken : trimmedTokens) {
+			int foundAt = infixTagExpression.indexOf(trimmedToken, startIndex);
+			int endIndex = foundAt + trimmedToken.length();
 			String rawToken = infixTagExpression.substring(startIndex, endIndex);
 			tokens.add(new Token(startIndex, rawToken));
 			startIndex = endIndex;

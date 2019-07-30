@@ -42,8 +42,8 @@ class ParseStatus {
 		return error("empty tag expression");
 	}
 
-	private static String format(int position) {
-		return "<" + position + ">";
+	private static String format(int indexInTagExpression) {
+		return "<" + indexInTagExpression + ">";
 	}
 
 	private static ParseStatus error(String errorMessage) {
@@ -67,7 +67,7 @@ class ParseStatus {
 		return !isSuccess();
 	}
 
-	public boolean isSuccess() {
+	private boolean isSuccess() {
 		return null == errorMessage;
 	}
 }

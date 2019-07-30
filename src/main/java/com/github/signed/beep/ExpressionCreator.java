@@ -9,5 +9,5 @@ interface ExpressionCreator {
 		return Optional.of(error);
 	}
 
-	Optional<ParseError> accept(Stack<Position<Expression>> expressions, int position);
+	Optional<ParseError> createExpressionAndAddTo(Stack<Position<Expression>> expressions, int position);
 }

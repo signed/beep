@@ -53,7 +53,7 @@ class Operator {
             String message = createMissingOperandMessage(position, expressions);
             return report(ParseError.Create(position, representation, message));
         }
-        return expressionCreator.accept(expressions, position);
+        return expressionCreator.createExpressionAndAddTo(expressions, position);
     }
 
     boolean hasSamePrecedenceAs(Operator operator) {

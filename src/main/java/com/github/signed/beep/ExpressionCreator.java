@@ -3,9 +3,9 @@ package com.github.signed.beep;
 import java.util.Optional;
 
 interface ExpressionCreator {
-    Optional<ParseError> Success = Optional.empty();
+    Optional<ParseError> success = Optional.empty();
 
-    static Optional<ParseError> ParseError(ParseError error) {
+    static Optional<ParseError> report(ParseError error) {
         return Optional.of(error);
     }
 

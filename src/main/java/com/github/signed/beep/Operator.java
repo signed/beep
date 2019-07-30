@@ -3,12 +3,12 @@ package com.github.signed.beep;
 import java.util.Optional;
 
 import static com.github.signed.beep.Associativity.Left;
-import static com.github.signed.beep.ExpressionCreator.ParseError;
+import static com.github.signed.beep.ExpressionCreator.report;
 
 class Operator {
 
     static Operator nullaryOperator(String representation, int precedence) {
-        return new Operator(representation, precedence, 0, null, (expressions, position) -> ExpressionCreator.Success);
+        return new Operator(representation, precedence, 0, null, (expressions, position) -> ExpressionCreator.success);
     }
 
     static Operator unaryOperator(String representation, int precedence, Associativity associativity,
@@ -50,7 +50,7 @@ class Operator {
 
     Optional<ParseError> createAndAddExpressionTo(Stack<Position<Expression>> expressions, int position) {
         if (expressions.size() < arity) {
-            return ParseError(ParseError.Create(position, representation, "missing operand"));
+            return report(ParseError.Create(position, representation, "missing operand"));
         }
         return expressionCreator.accept(expressions, position);
     }

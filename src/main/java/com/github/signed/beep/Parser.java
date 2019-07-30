@@ -51,12 +51,12 @@ public class Parser {
                 if (LeftParenthesis.represents(token)) {
                     pushPositionAt(i, LeftParenthesis);
                 } else if (RightParenthesis.represents(token)) {
-                    boolean foundMatchingBracket = false;
-                    while (!foundMatchingBracket && !operators.isEmpty()) {
+                    boolean foundMatchingParenthesis = false;
+                    while (!foundMatchingParenthesis && !operators.isEmpty()) {
                         Position<Operator> pop = operators.pop();
                         Operator candidate = pop.element;
                         if (LeftParenthesis.equals(candidate)) {
-                            foundMatchingBracket = true;
+                            foundMatchingParenthesis = true;
                         } else {
                             Optional<ParseError> maybeParseError = candidate.createAndAddExpressionTo(expressions, pop.index);
                             if (maybeParseError.isPresent()) {
@@ -64,8 +64,8 @@ public class Parser {
                             }
                         }
                     }
-                    if (!foundMatchingBracket) {
-                        return ParseResult.error(ParseError.Create("missing opening parenthesis"));
+                    if (!foundMatchingParenthesis) {
+                        return ParseResult.error(ParseError.Create(i, RightParenthesis.representation(), "missing opening parenthesis"));
                     }
                 } else if (validOperators.isOperator(token)) {
                     Operator operator = validOperators.operatorFor(token);
@@ -87,7 +87,7 @@ public class Parser {
                 Position<Operator> pop = operators.pop();
                 Operator operator = pop.element;
                 if (LeftParenthesis.equals(operator)) {
-                    return ParseResult.error(ParseError.Create("missing closing parenthesis"));
+                    return ParseResult.error(ParseError.Create(pop.index, pop.element.representation(), "missing closing parenthesis"));
                 }
 
                 Optional<ParseError> maybeParseError = operator.createAndAddExpressionTo(expressions, pop.index);
@@ -98,9 +98,9 @@ public class Parser {
 
             if (expressions.size() != 1) {
                 if (expressions.isEmpty()) {
-                    return ParseResult.error(ParseError.Create("empty tag expression"));
+                    return ParseResult.error(ParseError.emptyTagExpression());
                 }
-                return ParseResult.error(ParseError.Create("missing operator"));
+                return ParseResult.error(ParseError.missingOperator());
             }
             return ParseResult.success(expressions.pop().element);
         }

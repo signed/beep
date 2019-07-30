@@ -26,25 +26,25 @@ class ParserErrorTests {
 
 	@Test
 	void missingClosingParenthesis() {
-		assertThat(parseErrorFromParsing("(")).contains("missing closing parenthesis");
-		assertThat(parseErrorFromParsing("( foo & bar")).contains("missing closing parenthesis");
+		assertThat(parseErrorFromParsing("(")).contains("( at <0> missing closing parenthesis");
+		assertThat(parseErrorFromParsing("( foo & bar")).contains("( at <0> missing closing parenthesis");
 	}
 
 	@Test
 	void missingOpeningParenthesis() {
-		assertThat(parseErrorFromParsing(")")).contains("missing opening parenthesis");
-		assertThat(parseErrorFromParsing(" foo | bar)")).contains("missing opening parenthesis");
+		assertThat(parseErrorFromParsing(")")).contains(") at <0> missing opening parenthesis");
+		assertThat(parseErrorFromParsing(" foo | bar)")).contains(") at <3> missing opening parenthesis");
 	}
 
 	@Test
 	void partialUnaryOperator() {
-		assertThat(parseErrorFromParsing("!")).contains("missing operand");
+		assertThat(parseErrorFromParsing("!")).contains("! at <0> missing operand");
 	}
 
 	@Test
 	void partialBinaryOperator() {
-		assertThat(parseErrorFromParsing("& foo")).contains("missing operand");
-		assertThat(parseErrorFromParsing("foo |")).contains("missing operand");
+		assertThat(parseErrorFromParsing("& foo")).contains("& at <0> missing operand");
+		assertThat(parseErrorFromParsing("foo |")).contains("| at <1> missing operand");
 	}
 
     @ParameterizedTest
@@ -58,16 +58,16 @@ class ParserErrorTests {
         return Stream.of(
                 Arguments.of("foo bar", "missing operator"),
                 Arguments.of("foo bar |", "| at <2> missing rhs operand"),
-                Arguments.of("foo bar &", "problem parsing and"),
-                Arguments.of("foo & (bar !)", "! missing operand"),
-                Arguments.of("foo & (bar baz) |", "problem parsing and"),
-                Arguments.of("foo & (bar baz) &", "problem parsing and"),
-                Arguments.of("foo & |", "missing operand"),
-                Arguments.of("| |", "missing operand"),
-                Arguments.of("( foo & bar ) )", "missing opening parenthesis"),
-                Arguments.of("( ( foo & bar )", "missing closing parenthesis"),
-                Arguments.of("foo !& bar", "! missing operand"),
-                Arguments.of("foo !| bar", "! missing operand")
+                Arguments.of("foo bar &", "& at <2> missing rhs operand"),
+                Arguments.of("foo & (bar !)", "! at <4> missing rhs operand"),
+                Arguments.of("( foo & bar ) )", ") at <5> missing opening parenthesis"),
+                Arguments.of("( ( foo & bar )", "( at <0> missing closing parenthesis"),
+                Arguments.of("foo & (bar baz) |", "& at <1> problem parsing"),
+                Arguments.of("foo & (bar baz) &", "& at <1> problem parsing"),
+                Arguments.of("foo & |", "& at <1> missing operand"),
+                Arguments.of("| |", "| at <0> missing operand"),
+                Arguments.of("foo !& bar", "! at <1> missing rhs operand"),
+                Arguments.of("foo !| bar", "! at <1> missing rhs operand")
         );
         // @formatter:on
     }

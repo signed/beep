@@ -50,7 +50,7 @@ class Operator {
 
     Optional<ParseError> createAndAddExpressionTo(Stack<Position<Expression>> expressions, int position) {
         if (expressions.size() < arity) {
-            return ParseError("missing operand");
+            return ParseError(ParseError.Create(position, representation, "missing operand"));
         }
         return expressionCreator.accept(expressions, position);
     }

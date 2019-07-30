@@ -11,7 +11,6 @@ import static com.github.signed.beep.Expressions.not;
 import static com.github.signed.beep.Expressions.or;
 
 import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Stream;
 
 class Operators {
@@ -23,7 +22,7 @@ class Operators {
             expressions.push(new Position<>(position, not));
             return Success;
         }
-        return ParseError("! missing operand");
+        return ParseError(ParseError.Create(position, "!", "missing rhs operand"));
     });
 
     private static final Operator And = Operator.binaryOperator("&", 2, Left, (expressions, position) -> {
@@ -33,7 +32,12 @@ class Operators {
             expressions.push(new Position<>(position, and(lhs.element, rhs.element)));
             return Success;
         }
-        return ParseError("problem parsing and");
+
+        if (position > rhs.index) {
+            return ParseError(ParseError.Create(position, "&", "missing rhs operand"));
+        }
+
+        return ParseError(ParseError.Create(position, "&", "problem parsing"));
     });
 
     private static final Operator Or = Operator.binaryOperator("|", 1, Left, (expressions, position) -> {
@@ -44,9 +48,9 @@ class Operators {
             return Success;
         }
         if (position > rhs.index) {
-            return ParseError("| at <" + position + "> missing rhs operand");
+            return ParseError(ParseError.Create(position, "|", "missing rhs operand"));
         }
-        return ParseError("problem parsing or");
+        return ParseError(ParseError.Create(position, "|", "problem parsing"));
     });
 
     private final Map<String, Operator> representationToOperator = Stream.of(Not, And, Or).collect(

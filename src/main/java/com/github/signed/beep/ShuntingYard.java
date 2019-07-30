@@ -3,6 +3,7 @@ package com.github.signed.beep;
 import static java.lang.Integer.MIN_VALUE;
 import static com.github.signed.beep.Expressions.tag;
 import static com.github.signed.beep.Operator.nullaryOperator;
+import static com.github.signed.beep.ParseError.missingClosingParenthesis;
 
 import java.util.List;
 import java.util.Optional;
@@ -52,8 +53,7 @@ class ShuntingYard {
 			Position<Operator> pop = operators.pop();
 			Operator operator = pop.element;
 			if (LeftParenthesis.equals(operator)) {
-				return ParseResult.error(
-					ParseError.Create(pop.position, pop.element.representation(), "missing closing parenthesis"));
+                return ParseResult.error(missingClosingParenthesis(pop.position, pop.element.representation()));
 			}
 
 			Optional<ParseError> maybeParseError = operator.createAndAddExpressionTo(expressions, pop.position);
@@ -71,7 +71,7 @@ class ShuntingYard {
 		return ParseResult.success(expressions.pop().element);
 	}
 
-	public void findOperands(int i, String token) {
+    public void findOperands(int i, String token) {
 		Operator operator = validOperators.operatorFor(token);
 		while (operator.hasLowerPrecedenceThan(operators.peek().element)
 				|| operator.hasSamePrecedenceAs(operators.peek().element) && operator.isLeftAssociative()) {
@@ -81,7 +81,7 @@ class ShuntingYard {
 		pushPositionAt(i, operator);
 	}
 
-	public void findMatchingLeftParenthesis(int i) {
+	public void findMatchingLeftParenthesis(int position) {
 		boolean foundMatchingParenthesis = false;
 		while (!foundMatchingParenthesis && !operators.isEmpty()) {
 			Position<Operator> pop = operators.pop();
@@ -94,12 +94,12 @@ class ShuntingYard {
 			}
 		}
 		if (!foundMatchingParenthesis) {
-			maybeParseError = Optional.of(
-				ParseError.Create(i, RightParenthesis.representation(), "missing opening parenthesis"));
+            String representation = RightParenthesis.representation();
+            maybeParseError = Optional.of(ParseError.missingOpeningParenthesis(position, representation));
 		}
 	}
 
-	private void pushPositionAt(int i, Expression expression) {
+    private void pushPositionAt(int i, Expression expression) {
 		expressions.push(new Position<>(i, expression));
 	}
 

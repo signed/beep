@@ -12,6 +12,14 @@ public class ParseError {
 		return Create(position, representation, "problem parsing");
 	}
 
+	static ParseError missingOpeningParenthesis(int position, String representation) {
+        return Create(position, representation, "missing opening parenthesis");
+    }
+
+    public static ParseError missingClosingParenthesis(int position, String representation) {
+        return Create(position, representation, "missing closing parenthesis");
+    }
+
 	static ParseError Create(int position, String operatorRepresentation, String message) {
 		return new ParseError(operatorRepresentation + " at <" + position + "> " + message);
 	}

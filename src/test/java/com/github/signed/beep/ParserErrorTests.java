@@ -3,8 +3,12 @@ package com.github.signed.beep;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.Optional;
+import java.util.stream.Stream;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 class ParserErrorTests {
 
@@ -43,7 +47,32 @@ class ParserErrorTests {
 		assertThat(expressionParsedFrom("foo |")).isEmpty();
 	}
 
-	private Optional<Expression> expressionParsedFrom(String tagExpression) {
+    @ParameterizedTest
+    @MethodSource("data")
+    void acceptanceTests(String tagExpression) {
+        assertThat(expressionParsedFrom(tagExpression)).isEmpty();
+    }
+
+    private static Stream<Arguments> data() {
+        // @formatter:off
+        return Stream.of(
+                Arguments.of("foo bar |"),
+                Arguments.of("foo bar &"),
+                Arguments.of("foo & (bar !)"),
+                Arguments.of("foo & (bar baz) |"),
+                Arguments.of("foo & (bar baz) &"),
+                Arguments.of("foo & |"),
+                Arguments.of("| |"),
+                Arguments.of("foo bar"),
+                Arguments.of("( foo & bar ) )"),
+                Arguments.of("( ( foo & bar )"),
+                Arguments.of("foo !& bar"),
+                Arguments.of("foo !| bar")
+        );
+        // @formatter:on
+    }
+
+    private Optional<Expression> expressionParsedFrom(String tagExpression) {
 		return parser.parse(tagExpression);
 	}
 }

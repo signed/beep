@@ -51,11 +51,14 @@ class ParserTests {
 				Arguments.of("! foo", "!foo"),
 				Arguments.of("foo & bar", "(foo & bar)"),
 				Arguments.of("foo | bar", "(foo | bar)"),
-				Arguments.of("( ! foo & bar | baz)", "((!foo & bar) | baz)")
+				Arguments.of("( ! foo & bar | baz)", "((!foo & bar) | baz)"),
+				Arguments.of("(foo & bar ) | baz & quux", "((foo & bar) | (baz & quux))"),
+				Arguments.of("! foo | bar & ! baz | ! quux | quuz & corge", "(((!foo | (bar & !baz)) | !quux) | (quuz & corge))")
+
 		);
 		// @formatter:on
 	}
-
+    
 	private Expression expressionParsedFrom(String tagExpression) {
 		return parser.parse(tagExpression).orElseThrow(
 			() -> new RuntimeException("[" + tagExpression + "] should be parsable"));

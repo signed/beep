@@ -50,23 +50,7 @@ class Operator {
 
     Optional<ParseError> createAndAddExpressionTo(Stack<Position<Expression>> expressions, int position) {
         if (expressions.size() < arity) {
-            int mismatch = arity - expressions.size();
-            String message = "missing operand";
-
-            if (1 == arity) {
-                String side = associativity == Left ? "lhs" : "rhs";
-                message = "missing " + side + " operand";
-            }
-
-            if (2 == arity) {
-                if (1 == mismatch) {
-                    String side = position < expressions.peek().position ? "lhs" : "rhs";
-                    message = "missing " + side + " operand";
-                } else {
-                    message = "missing lhs and rhs operand";
-                }
-            }
-
+            String message = createMissingOperandMessage(position, expressions);
             return report(ParseError.Create(position, representation, message));
         }
         return expressionCreator.accept(expressions, position);
@@ -78,5 +62,24 @@ class Operator {
 
     boolean isLeftAssociative() {
         return Left == associativity;
+    }
+
+    private String createMissingOperandMessage(int position, Stack<Position<Expression>> expressions) {
+        if (1 == arity) {
+            return missingOneOperand(associativity == Left ? "lhs" : "rhs");
+        }
+
+        if (2 == arity) {
+            int mismatch = arity - expressions.size();
+            if (2 == mismatch) {
+                return "missing lhs and rhs operand";
+            }
+            return  missingOneOperand(position < expressions.peek().position ? "lhs" : "rhs");
+        }
+        return "missing operand";
+    }
+
+    private String missingOneOperand(String side) {
+        return "missing " + side + " operand";
     }
 }

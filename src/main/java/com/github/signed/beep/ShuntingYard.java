@@ -37,35 +37,6 @@ class ShuntingYard {
         return ParseResult.success(expressions.pop().element);
     }
 
-    public ParseStatus ensureOnlySingleExpressionRemains() {
-        ParseStatus maybeParseStatus3 = ParseStatus.NoParseError();
-        if (expressions.size() != 1) {
-            if (expressions.isEmpty()) {
-                maybeParseStatus3 = ParseStatus.emptyTagExpression();
-            } else {
-                maybeParseStatus3 = ParseStatus.missingOperator();
-            }
-        }
-        return maybeParseStatus3;
-    }
-
-    public ParseStatus consumeRemainingOperators() {
-        ParseStatus maybeParseStatus4 = ParseStatus.NoParseError();
-        while (maybeParseStatus4.noParseError() && !operators.isEmpty()) {
-            Position<Operator> pop = operators.pop();
-            Operator operator = pop.element;
-            if (LeftParenthesis.equals(operator)) {
-                maybeParseStatus4 = missingClosingParenthesis(pop.position, pop.element.representation());
-            } else {
-                ParseStatus maybeParseStatus2 = operator.createAndAddExpressionTo(expressions, pop.position);
-                if (maybeParseStatus2.isError()) {
-                    maybeParseStatus4 = maybeParseStatus2;
-                }
-            }
-        }
-        return maybeParseStatus4;
-    }
-
     private ParseStatus processTokens() {
         ParseStatus maybeParseStatus = ParseStatus.NoParseError();
         for (int position = 0; maybeParseStatus.noParseError() && position < tokens.size(); ++position) {
@@ -97,6 +68,43 @@ class ShuntingYard {
         return stepSuccessful();
     }
 
+    private void pushPositionAt(int position, Expression expression) {
+        expressions.push(new Position<>(position, expression));
+    }
+
+    private void pushPositionAt(int position, Operator operator) {
+        operators.push(new Position<>(position, operator));
+    }
+
+    private ParseStatus consumeRemainingOperators() {
+        ParseStatus maybeParseStatus4 = ParseStatus.NoParseError();
+        while (maybeParseStatus4.noParseError() && !operators.isEmpty()) {
+            Position<Operator> pop = operators.pop();
+            Operator operator = pop.element;
+            if (LeftParenthesis.equals(operator)) {
+                maybeParseStatus4 = missingClosingParenthesis(pop.position, pop.element.representation());
+            } else {
+                ParseStatus maybeParseStatus2 = operator.createAndAddExpressionTo(expressions, pop.position);
+                if (maybeParseStatus2.isError()) {
+                    maybeParseStatus4 = maybeParseStatus2;
+                }
+            }
+        }
+        return maybeParseStatus4;
+    }
+
+    private ParseStatus ensureOnlySingleExpressionRemains() {
+        ParseStatus maybeParseStatus3 = ParseStatus.NoParseError();
+        if (expressions.size() != 1) {
+            if (expressions.isEmpty()) {
+                maybeParseStatus3 = ParseStatus.emptyTagExpression();
+            } else {
+                maybeParseStatus3 = ParseStatus.missingOperator();
+            }
+        }
+        return maybeParseStatus3;
+    }
+
     private ParseStatus findMatchingLeftParenthesis(int position) {
         boolean foundMatchingParenthesis = false;
         while (!foundMatchingParenthesis && !operators.isEmpty()) {
@@ -122,11 +130,4 @@ class ShuntingYard {
         return ParseStatus.NoParseError();
     }
 
-    private void pushPositionAt(int i, Expression expression) {
-        expressions.push(new Position<>(i, expression));
-    }
-
-    private void pushPositionAt(int i, Operator operator) {
-        operators.push(new Position<>(i, operator));
-    }
 }

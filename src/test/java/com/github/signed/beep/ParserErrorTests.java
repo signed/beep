@@ -59,9 +59,9 @@ class ParserErrorTests {
 				Arguments.of("|", "| at <0> missing lhs and rhs operand"),
 				Arguments.of("| |", "| at <0> missing lhs and rhs operand"),
 				Arguments.of("!", "! at <0> missing rhs operand"),
-				Arguments.of("foo bar", "missing operator"),
+				Arguments.of("foo bar", "missing operator between foo <2> and bar <4>"),
 				Arguments.of("foo bar |", "| at <8> missing rhs operand"),
-				Arguments.of("foo bar | baz", "missing operator"), // can be improved?
+				Arguments.of("foo bar | baz", "missing operator between foo <2> and (bar | baz) <4>"),
 				Arguments.of("foo bar &", "& at <8> missing rhs operand"),
 				Arguments.of("foo & (bar !)", "! at <11> missing rhs operand"),
 				Arguments.of("( foo & bar ) )", ") at <14> missing opening parenthesis"),

@@ -34,10 +34,6 @@ class ParseStatus {
 		return error("missing operator between " + lhsString + " and " + rhsString);
 	}
 
-	static ParseStatus missingOperator() {
-		return error("missing operator");
-	}
-
 	static ParseStatus emptyTagExpression() {
 		return error("empty tag expression");
 	}

@@ -6,7 +6,6 @@ import static com.github.signed.beep.Operator.nullaryOperator;
 import static com.github.signed.beep.ParseStatus.emptyTagExpression;
 import static com.github.signed.beep.ParseStatus.missingClosingParenthesis;
 import static com.github.signed.beep.ParseStatus.missingOpeningParenthesis;
-import static com.github.signed.beep.ParseStatus.missingOperator;
 import static com.github.signed.beep.ParseStatus.success;
 
 import java.util.List;
@@ -131,7 +130,9 @@ class ShuntingYard {
 		if (expressions.isEmpty()) {
 			return emptyTagExpression();
 		}
-		return missingOperator();
+		TokenWith<Expression> rhs = expressions.pop();
+		TokenWith<Expression> lhs = expressions.pop();
+		return ParseStatus.missingOperatorBetween(lhs, rhs);
 	}
 
 }

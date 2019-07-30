@@ -21,7 +21,7 @@ class ShuntingYard {
 
     private final List<String> tokens;
 
-    public ShuntingYard(List<String> tokens) {
+    ShuntingYard(List<String> tokens) {
         this.tokens = tokens;
         pushPositionAt(-1, Sentinel);
     }
@@ -65,7 +65,7 @@ class ShuntingYard {
             }
         }
         pushPositionAt(position, currentOperator);
-        return stepSuccessful();
+        return ParseStatus.NoParseError();
     }
 
     private void pushPositionAt(int position, Expression expression) {
@@ -123,10 +123,6 @@ class ShuntingYard {
             String representation = RightParenthesis.representation();
             return ParseStatus.missingOpeningParenthesis(position, representation);
         }
-        return stepSuccessful();
-    }
-
-    public ParseStatus stepSuccessful() {
         return ParseStatus.NoParseError();
     }
 

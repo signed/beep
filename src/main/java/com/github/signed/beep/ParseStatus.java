@@ -24,7 +24,7 @@ class ParseStatus {
 		return errorAt(position, representation, "missing rhs operand");
 	}
 
-	static ParseStatus missingOperatorBetween(Position<Expression> rhs, Position<Expression> lhs) {
+	static ParseStatus missingOperatorBetween(Position<Expression> lhs, Position<Expression> rhs) {
 		return error("missing operator between " + format(lhs) + " and " + format(rhs));
 	}
 

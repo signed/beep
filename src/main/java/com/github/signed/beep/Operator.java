@@ -38,7 +38,7 @@ class Operator {
 				return missingRhsOperand(position, representation);
 			}
 			if (position < lhs.position) {
-				return ParseStatus.missingOperatorBetween(rhs, lhs);
+				return ParseStatus.missingOperatorBetween(lhs, rhs);
 			}
 			return ParseStatus.problemParsing(position, representation);
 		});

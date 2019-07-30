@@ -38,7 +38,7 @@ class ShuntingYard {
     }
 
     private ParseStatus processTokens() {
-        ParseStatus parseStatus = ParseStatus.NoParseError();
+        ParseStatus parseStatus = ParseStatus.success();
         for (int position = 0; parseStatus.noError() && position < tokens.size(); ++position) {
             String token = tokens.get(position);
             if (LeftParenthesis.represents(token)) {
@@ -59,7 +59,7 @@ class ShuntingYard {
             Position<Operator> pop = operators.pop();
             Operator candidate = pop.element;
             if (LeftParenthesis.equals(candidate)) {
-                return ParseStatus.NoParseError();
+                return ParseStatus.success();
             }
             ParseStatus parseStatus = candidate.createAndAddExpressionTo(expressions, pop.position);
             if (parseStatus.isError()) {
@@ -80,7 +80,7 @@ class ShuntingYard {
             }
         }
         pushPositionAt(position, currentOperator);
-        return ParseStatus.NoParseError();
+        return ParseStatus.success();
     }
 
     private void pushPositionAt(int position, Expression expression) {
@@ -103,12 +103,12 @@ class ShuntingYard {
                 return maybeParseStatus2;
             }
         }
-        return ParseStatus.NoParseError();
+        return ParseStatus.success();
     }
 
     private ParseStatus ensureOnlySingleExpressionRemains() {
         if (expressions.size() == 1) {
-            return ParseStatus.NoParseError();
+            return ParseStatus.success();
         }
         if (expressions.isEmpty()) {
             return ParseStatus.emptyTagExpression();

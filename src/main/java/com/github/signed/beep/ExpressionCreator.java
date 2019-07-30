@@ -1,7 +1,7 @@
 package com.github.signed.beep;
 
 interface ExpressionCreator {
-	ParseStatus success = ParseStatus.NoParseError();
+	ParseStatus success = ParseStatus.success();
 
 	static ParseStatus report(ParseStatus error) {
 		return error;

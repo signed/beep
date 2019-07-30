@@ -4,7 +4,7 @@ import java.util.function.Supplier;
 
 public class ParseStatus {
 
-    public static ParseStatus NoParseError() {
+    static ParseStatus success() {
         return new ParseStatus(null);
     }
 

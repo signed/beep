@@ -34,6 +34,10 @@ class ParseStatus {
 		return new ParseStatus("missing operator");
 	}
 
+    static ParseStatus missingRhsOperand(String representation, int position) {
+        return Create(position, representation, "missing rhs operand");
+    }
+
 	static ParseStatus emptyTagExpression() {
 		return new ParseStatus("empty tag expression");
 	}
@@ -44,7 +48,7 @@ class ParseStatus {
 		this.message = message;
 	}
 
-	public ParseStatus process(Supplier<ParseStatus> step) {
+    public ParseStatus process(Supplier<ParseStatus> step) {
 		if (noError()) {
 			return step.get();
 		}

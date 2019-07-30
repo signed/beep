@@ -1,12 +1,12 @@
 package com.github.signed.beep;
 
 import static java.lang.Integer.MIN_VALUE;
-import static com.github.signed.beep.TagExpressions.tag;
 import static com.github.signed.beep.Operator.nullaryOperator;
 import static com.github.signed.beep.ParseStatus.emptyTagExpression;
 import static com.github.signed.beep.ParseStatus.missingClosingParenthesis;
 import static com.github.signed.beep.ParseStatus.missingOpeningParenthesis;
 import static com.github.signed.beep.ParseStatus.success;
+import static com.github.signed.beep.TagExpressions.tag;
 
 import java.util.List;
 

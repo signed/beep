@@ -33,7 +33,6 @@ class ShuntingYard {
         if (parseStatus.isError()) {
             return ParseResult.error(parseStatus);
         }
-
         return ParseResult.success(expressions.pop().element);
     }
 
@@ -46,7 +45,8 @@ class ShuntingYard {
             } else if (RightParenthesis.represents(token)) {
                 parseStatus = findMatchingLeftParenthesis(position);
             } else if (validOperators.isOperator(token)) {
-                parseStatus = findOperands(position, token);
+                Operator operator = validOperators.operatorFor(token);
+                parseStatus = findOperands(position, operator);
             } else {
                 pushPositionAt(position, tag(token));
             }
@@ -69,8 +69,7 @@ class ShuntingYard {
         return ParseStatus.missingOpeningParenthesis(position, RightParenthesis.representation());
     }
 
-    private ParseStatus findOperands(int position, String token) {
-        Operator currentOperator = validOperators.operatorFor(token);
+    private ParseStatus findOperands(int position, Operator currentOperator) {
         while (currentOperator.hasLowerPrecedenceThan(operators.peek().element)
                 || currentOperator.hasSamePrecedenceAs(operators.peek().element) && currentOperator.isLeftAssociative()) {
             Position<Operator> pop = operators.pop();

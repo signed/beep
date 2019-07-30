@@ -40,10 +40,10 @@ class Operators {
 			return report(ParseError.missingOperatorBetween(lhs.position, lhs.element.toString(), rhs.position,
 				rhs.element.toString()));
 		}
-        return report(ParseError.problemParsing(position, "&"));
+		return report(ParseError.problemParsing(position, "&"));
 	});
 
-    private static final Operator Or = Operator.binaryOperator("|", 1, Left, (expressions, position) -> {
+	private static final Operator Or = Operator.binaryOperator("|", 1, Left, (expressions, position) -> {
 		Position<Expression> rhs = expressions.pop();
 		Position<Expression> lhs = expressions.pop();
 		if (lhs.position < position && position < rhs.position) {

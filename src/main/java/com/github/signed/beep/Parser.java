@@ -4,7 +4,7 @@ import java.util.List;
 
 public class Parser {
 
-    public static ParseResult parseExpressionFrom(String infixTagExpression) {
+	public static ParseResult parseExpressionFrom(String infixTagExpression) {
 		return new Parser().parse(infixTagExpression);
 	}
 

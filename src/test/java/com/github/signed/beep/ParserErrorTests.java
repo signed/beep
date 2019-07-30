@@ -83,6 +83,13 @@ class ParserErrorTests {
 	}
 
 	private Optional<String> parseErrorFromParsing(String tagExpression) {
-		return parser.parse(tagExpression).parseError();
+		try {
+            ParseResult parseResult = parser.parse(tagExpression);
+            parseResult.expressionOrThrow(RuntimeException::new);
+			return Optional.empty();
+		}
+		catch (RuntimeException ex) {
+			return Optional.ofNullable(ex.getMessage());
+		}
 	}
 }

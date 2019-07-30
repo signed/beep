@@ -58,7 +58,7 @@ public class Parser {
                         if (LeftParenthesis.equals(candidate)) {
                             foundMatchingParenthesis = true;
                         } else {
-                            Optional<ParseError> maybeParseError = candidate.createAndAddExpressionTo(expressions, pop.index);
+                            Optional<ParseError> maybeParseError = candidate.createAndAddExpressionTo(expressions, pop.position);
                             if (maybeParseError.isPresent()) {
                                 return ParseResult.error(maybeParseError.get());
                             }
@@ -72,7 +72,7 @@ public class Parser {
                     while (operator.hasLowerPrecedenceThan(operators.peek().element)
                             || operator.hasSamePrecedenceAs(operators.peek().element) && operator.isLeftAssociative()) {
                         Position<Operator> pop = operators.pop();
-                        Optional<ParseError> maybeParseError = pop.element.createAndAddExpressionTo(expressions, pop.index);
+                        Optional<ParseError> maybeParseError = pop.element.createAndAddExpressionTo(expressions, pop.position);
                         if (maybeParseError.isPresent()) {
                             return ParseResult.error(maybeParseError.get());
                         }
@@ -87,10 +87,10 @@ public class Parser {
                 Position<Operator> pop = operators.pop();
                 Operator operator = pop.element;
                 if (LeftParenthesis.equals(operator)) {
-                    return ParseResult.error(ParseError.Create(pop.index, pop.element.representation(), "missing closing parenthesis"));
+                    return ParseResult.error(ParseError.Create(pop.position, pop.element.representation(), "missing closing parenthesis"));
                 }
 
-                Optional<ParseError> maybeParseError = operator.createAndAddExpressionTo(expressions, pop.index);
+                Optional<ParseError> maybeParseError = operator.createAndAddExpressionTo(expressions, pop.position);
                 if (maybeParseError.isPresent()) {
                     return ParseResult.error(maybeParseError.get());
                 }

@@ -6,6 +6,10 @@ public class ParseError {
         return new ParseError(operatorRepresentation + " at <" + position + "> "+ message);
     }
 
+    static ParseError MissingOperatorBetween(int lhsPosition, String lhsRepresentation, int rhsPosition, String rhsRepresentation) {
+        return new ParseError("missing operator between " + lhsRepresentation + " <" + lhsPosition + "> and " + rhsRepresentation + " <" + rhsPosition + ">");
+    }
+
     static ParseError missingOperator() {
         return new ParseError("missing operator");
     }

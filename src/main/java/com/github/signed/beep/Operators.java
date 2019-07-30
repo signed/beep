@@ -17,7 +17,7 @@ class Operators {
 
     private static final Operator Not = Operator.unaryOperator("!", 3, Right, (expressions, position) -> {
         Position<Expression> rhs = expressions.pop();
-        if (position < rhs.index) {
+        if (position < rhs.position) {
             Expression not = not(rhs.element);
             expressions.push(new Position<>(position, not));
             return Success;
@@ -28,13 +28,17 @@ class Operators {
     private static final Operator And = Operator.binaryOperator("&", 2, Left, (expressions, position) -> {
         Position<Expression> rhs = expressions.pop();
         Position<Expression> lhs = expressions.pop();
-        if (lhs.index < position && position < rhs.index) {
+        if (lhs.position < position && position < rhs.position) {
             expressions.push(new Position<>(position, and(lhs.element, rhs.element)));
             return Success;
         }
 
-        if (position > rhs.index) {
+        if (position > rhs.position) {
             return ParseError(ParseError.Create(position, "&", "missing rhs operand"));
+        }
+
+        if(position < lhs.position){
+            return ParseError(ParseError.MissingOperatorBetween(lhs.position, lhs.element.toString(),rhs.position, rhs.element.toString()));
         }
 
         return ParseError(ParseError.Create(position, "&", "problem parsing"));
@@ -43,11 +47,11 @@ class Operators {
     private static final Operator Or = Operator.binaryOperator("|", 1, Left, (expressions, position) -> {
         Position<Expression> rhs = expressions.pop();
         Position<Expression> lhs = expressions.pop();
-        if (lhs.index < position && position < rhs.index) {
+        if (lhs.position < position && position < rhs.position) {
             expressions.push(new Position<>(position, or(lhs.element, rhs.element)));
             return Success;
         }
-        if (position > rhs.index) {
+        if (position > rhs.position) {
             return ParseError(ParseError.Create(position, "|", "missing rhs operand"));
         }
         return ParseError(ParseError.Create(position, "|", "problem parsing"));

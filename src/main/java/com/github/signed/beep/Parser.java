@@ -10,11 +10,11 @@ class Parser {
 		return constructExpressionFrom(tokensDerivedFrom(infixTagExpression));
 	}
 
-	private List<String> tokensDerivedFrom(String infixTagExpression) {
+	private List<Tokenizer.Token> tokensDerivedFrom(String infixTagExpression) {
 		return tokenizer.tokenize(infixTagExpression);
 	}
 
-	private ParseResult constructExpressionFrom(List<String> tokens) {
+	private ParseResult constructExpressionFrom(List<Tokenizer.Token> tokens) {
 		return new ShuntingYard(tokens).execute();
 	}
 

@@ -2,10 +2,12 @@ package com.github.signed.beep;
 
 class Position<T> {
 	final int position;
+	final Token token;
 	final T element;
 
-	Position(int position, T element) {
-		this.position = position;
+	Position(Token token, T element) {
+		this.position = token.position;
+		this.token = token;
 		this.element = element;
 	}
 }

@@ -24,12 +24,11 @@ class ShuntingYard {
 	private final Operators validOperators = new Operators();
 	private final Stack<Position<Expression>> expressions = new DequeStack<>();
 	private final Stack<Position<Operator>> operators = new DequeStack<>();
-
 	private final List<Token> tokens;
 
 	ShuntingYard(List<Token> tokens) {
 		this.tokens = tokens;
-		pushOperatorAt(-1, Sentinel);
+		pushOperatorAt(new Token(-1, -1, ""), Sentinel);
 	}
 
 	public ParseResult execute() {
@@ -55,46 +54,46 @@ class ShuntingYard {
 	private ParseStatus processTokenAt(int position) {
 		Token token = tokens.get(position);
 		if (LeftParenthesis.represents(token.string())) {
-			pushOperatorAt(position, LeftParenthesis);
+			pushOperatorAt(token, LeftParenthesis);
 			return success();
 		}
 		if (RightParenthesis.represents(token.string())) {
-			return findMatchingLeftParenthesis(position);
+			return findMatchingLeftParenthesis(token);
 		}
 		if (validOperators.isOperator(token.string())) {
 			Operator operator = validOperators.operatorFor(token.string());
-			return findOperands(position, operator);
+			return findOperands(token, operator);
 		}
-		pushExpressionAt(position, tag(token.string()));
+		pushExpressionAt(token, tag(token.string()));
 		return success();
 	}
 
-	private ParseStatus findMatchingLeftParenthesis(int position) {
+	private ParseStatus findMatchingLeftParenthesis(Token token) {
 		while (!operators.isEmpty()) {
 			Position<Operator> positionWithOperator = operators.pop();
 			Operator operator = positionWithOperator.element;
 			if (LeftParenthesis.equals(operator)) {
 				return success();
 			}
-			ParseStatus parseStatus = operator.createAndAddExpressionTo(expressions, positionWithOperator.position);
+			ParseStatus parseStatus = operator.createAndAddExpressionTo(expressions, positionWithOperator.token);
 			if (parseStatus.isError()) {
 				return parseStatus;
 			}
 		}
-		return missingOpeningParenthesis(position, RightParenthesis.representation());
+		return missingOpeningParenthesis(token, RightParenthesis.representation());
 	}
 
-	private ParseStatus findOperands(int position, Operator currentOperator) {
+	private ParseStatus findOperands(Token token, Operator currentOperator) {
 		while (currentOperator.hasLowerPrecedenceThan(previousOperator())
 				|| currentOperator.hasSamePrecedenceAs(previousOperator()) && currentOperator.isLeftAssociative()) {
 			Position<Operator> positionWithOperator = operators.pop();
 			ParseStatus parseStatus = positionWithOperator.element.createAndAddExpressionTo(expressions,
-				positionWithOperator.position);
+				positionWithOperator.token);
 			if (parseStatus.isError()) {
 				return parseStatus;
 			}
 		}
-		pushOperatorAt(position, currentOperator);
+		pushOperatorAt(token, currentOperator);
 		return success();
 	}
 
@@ -102,12 +101,12 @@ class ShuntingYard {
 		return operators.peek().element;
 	}
 
-	private void pushExpressionAt(int position, Expression expression) {
-		expressions.push(new Position<>(position, expression));
+	private void pushExpressionAt(Token token, Expression expression) {
+		expressions.push(new Position<>(token, expression));
 	}
 
-	private void pushOperatorAt(int position, Operator operator) {
-		operators.push(new Position<>(position, operator));
+	private void pushOperatorAt(Token token, Operator operator) {
+		operators.push(new Position<>(token, operator));
 	}
 
 	private ParseStatus consumeRemainingOperators() {
@@ -115,9 +114,9 @@ class ShuntingYard {
 			Position<Operator> positionWithOperator = operators.pop();
 			Operator operator = positionWithOperator.element;
 			if (LeftParenthesis.equals(operator)) {
-				return missingClosingParenthesis(positionWithOperator.position, operator.representation());
+				return missingClosingParenthesis(positionWithOperator.token, operator.representation());
 			}
-			ParseStatus parseStatus = operator.createAndAddExpressionTo(expressions, positionWithOperator.position);
+			ParseStatus parseStatus = operator.createAndAddExpressionTo(expressions, positionWithOperator.token);
 			if (parseStatus.isError()) {
 				return parseStatus;
 			}

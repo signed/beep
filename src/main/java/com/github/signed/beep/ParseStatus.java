@@ -8,24 +8,24 @@ class ParseStatus {
 		return error(null);
 	}
 
-	static ParseStatus problemParsing(int position, String representation) {
-		return errorAt(position, representation, "problem parsing");
+	static ParseStatus problemParsing(Token token, String representation) {
+		return errorAt(token, representation, "problem parsing");
 	}
 
-	static ParseStatus missingOpeningParenthesis(int position, String representation) {
-		return errorAt(position, representation, "missing opening parenthesis");
+	static ParseStatus missingOpeningParenthesis(Token token, String representation) {
+		return errorAt(token, representation, "missing opening parenthesis");
 	}
 
-	static ParseStatus missingClosingParenthesis(int position, String representation) {
-		return errorAt(position, representation, "missing closing parenthesis");
+	static ParseStatus missingClosingParenthesis(Token token, String representation) {
+		return errorAt(token, representation, "missing closing parenthesis");
 	}
 
-	static ParseStatus missingRhsOperand(int position, String representation) {
-		return errorAt(position, representation, "missing rhs operand");
+	static ParseStatus missingRhsOperand(Token token, String representation) {
+		return errorAt(token, representation, "missing rhs operand");
 	}
 
-	static ParseStatus errorAt(int position, String operatorRepresentation, String message) {
-		return error(operatorRepresentation + " at " + format(position) + " " + message);
+	static ParseStatus errorAt(Token token, String operatorRepresentation, String message) {
+		return error(operatorRepresentation + " at " + format(token.position) + " " + message);
 	}
 
 	static ParseStatus missingOperatorBetween(Position<Expression> lhs, Position<Expression> rhs) {

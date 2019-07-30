@@ -43,8 +43,8 @@ class TokenizerTests {
 		assertThat(tokenStringsExtractedFrom("()")).containsExactly("(", ")");
 		assertThat(tokenStringsExtractedFrom("(tag)")).containsExactly("(", "tag", ")");
 		assertThat(tokenStringsExtractedFrom("( tag )")).containsExactly("(", "tag", ")");
-		assertThat(tokenStringsExtractedFrom("( foo &bar)| (baz& qux )")).containsExactly("(", "foo", "&", "bar", ")", "|",
-			"(", "baz", "&", "qux", ")");
+		assertThat(tokenStringsExtractedFrom("( foo &bar)| (baz& qux )")).containsExactly("(", "foo", "&", "bar", ")",
+			"|", "(", "baz", "&", "qux", ")");
 	}
 
 	@Test
@@ -59,7 +59,7 @@ class TokenizerTests {
 	void extractStartPositionOfRawString() {
 		assertThat(startIndicesExtractedFrom("(")).containsExactly(0);
 		assertThat(startIndicesExtractedFrom("  (  (")).containsExactly(0, 3);
-		assertThat(startIndicesExtractedFrom("foo &!bar")).containsExactly(0, 3,5,6);
+		assertThat(startIndicesExtractedFrom("foo &!bar")).containsExactly(0, 3, 5, 6);
 	}
 
 	private Stream<Integer> startIndicesExtractedFrom(String expression) {
@@ -71,7 +71,7 @@ class TokenizerTests {
 	}
 
 	private List<String> tokenStringsExtractedFrom(String expression) {
-		return tokensExtractedFrom(expression).map(token -> token.string()).collect(toList());
+		return tokensExtractedFrom(expression).map(Token::string).collect(toList());
 	}
 
 	private Stream<Token> tokensExtractedFrom(String expression) {

@@ -5,29 +5,29 @@ import java.util.function.Function;
 
 public class ParseResult {
 
-	public static ParseResult error(ParseError parseError) {
-		return new ParseResult(parseError, null);
+	public static ParseResult error(ParseStatus parseStatus) {
+		return new ParseResult(parseStatus, null);
 	}
 
 	public static ParseResult success(Expression expression) {
 		return new ParseResult(null, expression);
 	}
 
-	private final ParseError parseError;
+	private final ParseStatus parseStatus;
 	private final Expression expression;
 
-	private ParseResult(ParseError parseError, Expression expression) {
-		this.parseError = parseError;
+	private ParseResult(ParseStatus parseStatus, Expression expression) {
+		this.parseStatus = parseStatus;
 		this.expression = expression;
 	}
 
 	public Optional<String> parseError() {
-		return Optional.ofNullable(parseError).map(e -> e.message);
+		return Optional.ofNullable(parseStatus).map(e -> e.message);
 	}
 
-	public Expression expressionOrThrow(Function<ParseError, RuntimeException> error) {
-		if (null != parseError) {
-			throw error.apply(parseError);
+	public Expression expressionOrThrow(Function<ParseStatus, RuntimeException> error) {
+		if (null != parseStatus) {
+			throw error.apply(parseStatus);
 		}
 		return expression;
 	}

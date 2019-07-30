@@ -1,13 +1,11 @@
 package com.github.signed.beep;
 
-import java.util.Optional;
-
 interface ExpressionCreator {
-	Optional<ParseError> success = Optional.empty();
+	ParseStatus success = ParseStatus.NoParseError();
 
-	static Optional<ParseError> report(ParseError error) {
-		return Optional.of(error);
+	static ParseStatus report(ParseStatus error) {
+		return error;
 	}
 
-	Optional<ParseError> createExpressionAndAddTo(Stack<Position<Expression>> expressions, int position);
+	ParseStatus createExpressionAndAddTo(Stack<Position<Expression>> expressions, int position);
 }

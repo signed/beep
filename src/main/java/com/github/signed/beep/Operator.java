@@ -3,8 +3,6 @@ package com.github.signed.beep;
 import static com.github.signed.beep.Associativity.Left;
 import static com.github.signed.beep.ExpressionCreator.report;
 
-import java.util.Optional;
-
 class Operator {
 
 	static Operator nullaryOperator(String representation, int precedence) {
@@ -48,10 +46,10 @@ class Operator {
 		return representation.equals(token);
 	}
 
-	Optional<ParseError> createAndAddExpressionTo(Stack<Position<Expression>> expressions, int position) {
+	ParseStatus createAndAddExpressionTo(Stack<Position<Expression>> expressions, int position) {
 		if (expressions.size() < arity) {
 			String message = createMissingOperandMessage(position, expressions);
-			return report(ParseError.Create(position, representation, message));
+			return report(ParseStatus.Create(position, representation, message));
 		}
 		return expressionCreator.createExpressionAndAddTo(expressions, position);
 	}

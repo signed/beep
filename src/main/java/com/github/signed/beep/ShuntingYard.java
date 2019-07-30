@@ -45,14 +45,13 @@ class ShuntingYard {
 
 	private ParseStatus processTokens() {
 		ParseStatus parseStatus = success();
-		for (int position = 0; parseStatus.isSuccess() && position < tokens.size(); ++position) {
-			parseStatus = processTokenAt(position);
+		for (Token token : tokens) {
+			parseStatus = parseStatus.process(() -> process(token));
 		}
 		return parseStatus;
 	}
 
-	private ParseStatus processTokenAt(int position) {
-		Token token = tokens.get(position);
+	private ParseStatus process(Token token) {
 		if (LeftParenthesis.represents(token.string())) {
 			pushOperatorAt(token, LeftParenthesis);
 			return success();

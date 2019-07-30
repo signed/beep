@@ -18,6 +18,7 @@ class ShuntingYard {
     private final Operators validOperators = new Operators();
     private final Stack<Position<Expression>> expressions = new DequeStack<>();
     private final Stack<Position<Operator>> operators = new DequeStack<>();
+    private Optional<ParseError> maybeParseError = Optional.empty();
 
     private List<String> tokens;
 
@@ -27,44 +28,21 @@ class ShuntingYard {
     }
 
     public ParseResult execute() {
-        for (int i = 0; i < tokens.size(); ++i) {
+        for (int i = 0; !maybeParseError.isPresent() && i < tokens.size(); ++i) {
             String token = tokens.get(i);
             if (LeftParenthesis.represents(token)) {
                 pushPositionAt(i, LeftParenthesis);
             } else if (RightParenthesis.represents(token)) {
-                boolean foundMatchingParenthesis = false;
-                while (!foundMatchingParenthesis && !operators.isEmpty()) {
-                    Position<Operator> pop = operators.pop();
-                    Operator candidate = pop.element;
-                    if (LeftParenthesis.equals(candidate)) {
-                        foundMatchingParenthesis = true;
-                    } else {
-                        Optional<ParseError> maybeParseError = candidate.createAndAddExpressionTo(expressions,
-                                pop.position);
-                        if (maybeParseError.isPresent()) {
-                            return ParseResult.error(maybeParseError.get());
-                        }
-                    }
-                }
-                if (!foundMatchingParenthesis) {
-                    return ParseResult.error(
-                            ParseError.Create(i, RightParenthesis.representation(), "missing opening parenthesis"));
-                }
+                findMatchingLeftParenthesis(i);
             } else if (validOperators.isOperator(token)) {
-                Operator operator = validOperators.operatorFor(token);
-                while (operator.hasLowerPrecedenceThan(operators.peek().element)
-                        || operator.hasSamePrecedenceAs(operators.peek().element) && operator.isLeftAssociative()) {
-                    Position<Operator> pop = operators.pop();
-                    Optional<ParseError> maybeParseError = pop.element.createAndAddExpressionTo(expressions,
-                            pop.position);
-                    if (maybeParseError.isPresent()) {
-                        return ParseResult.error(maybeParseError.get());
-                    }
-                }
-                pushPositionAt(i, operator);
+                findOperands(i, token);
             } else {
                 pushPositionAt(i, tag(token));
             }
+        }
+
+        if (maybeParseError.isPresent()) {
+            return ParseResult.error(maybeParseError.get());
         }
 
         while (!operators.isEmpty()) {
@@ -88,6 +66,32 @@ class ShuntingYard {
             return ParseResult.error(ParseError.missingOperator());
         }
         return ParseResult.success(expressions.pop().element);
+    }
+
+    public void findOperands(int i, String token) {
+        Operator operator = validOperators.operatorFor(token);
+        while (operator.hasLowerPrecedenceThan(operators.peek().element)
+                || operator.hasSamePrecedenceAs(operators.peek().element) && operator.isLeftAssociative()) {
+            Position<Operator> pop = operators.pop();
+            maybeParseError = pop.element.createAndAddExpressionTo(expressions, pop.position);
+        }
+        pushPositionAt(i, operator);
+    }
+
+    public void findMatchingLeftParenthesis(int i) {
+        boolean foundMatchingParenthesis = false;
+        while (!foundMatchingParenthesis && !operators.isEmpty()) {
+            Position<Operator> pop = operators.pop();
+            Operator candidate = pop.element;
+            if (LeftParenthesis.equals(candidate)) {
+                foundMatchingParenthesis = true;
+            } else {
+                maybeParseError = candidate.createAndAddExpressionTo(expressions, pop.position);
+            }
+        }
+        if (!foundMatchingParenthesis) {
+            maybeParseError = Optional.of(ParseError.Create(i, RightParenthesis.representation(), "missing opening parenthesis"));
+        }
     }
 
     private void pushPositionAt(int i, Expression expression) {

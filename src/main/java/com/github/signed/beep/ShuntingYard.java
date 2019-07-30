@@ -12,7 +12,9 @@ import static com.github.signed.beep.ParseStatus.success;
 import java.util.List;
 
 /**
- * This is based on a modified version of the <a href="https://en.wikipedia.org/wiki/Shunting-yard_algor">Shunting-yard algorithm</a>
+ * This is based on a modified version of the
+ * <a href="https://en.wikipedia.org/wiki/Shunting-yard_algorithm">
+ *     Shunting-yard algorithm</a>
  */
 class ShuntingYard {
 	private static final Operator RightParenthesis = nullaryOperator(")", -1);
@@ -33,8 +35,8 @@ class ShuntingYard {
 	public ParseResult execute() {
 		// @formatter:off
 		ParseStatus parseStatus = processTokens()
-                .process(this::consumeRemainingOperators)
-                .process(this::ensureOnlySingleExpressionRemains);
+				.process(this::consumeRemainingOperators)
+				.process(this::ensureOnlySingleExpressionRemains);
         // @formatter:on
 		if (parseStatus.isError()) {
 			return ParseResults.error(parseStatus.errorMessage);

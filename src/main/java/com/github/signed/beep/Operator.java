@@ -1,6 +1,6 @@
 package com.github.signed.beep;
 
-import static com.github.signed.beep.Associativity.Left;
+import static com.github.signed.beep.Operator.Associativity.Left;
 import static com.github.signed.beep.ParseStatus.missingOperatorBetween;
 import static com.github.signed.beep.ParseStatus.missingRhsOperand;
 import static com.github.signed.beep.ParseStatus.problemParsing;
@@ -11,6 +11,14 @@ import java.util.function.Function;
 
 class Operator {
 
+	enum Associativity {
+		Left, Right
+	}
+
+	interface ExpressionCreator {
+		ParseStatus createExpressionAndAddTo(Stack<Position<Expression>> expressions, int position);
+	}
+
 	static Operator nullaryOperator(String representation, int precedence) {
 		return new Operator(representation, precedence, 0, null, (expressions, position) -> success());
 	}
@@ -20,8 +28,7 @@ class Operator {
 		return new Operator(representation, precedence, 1, associativity, (expressions, position) -> {
 			Position<Expression> rhs = expressions.pop();
 			if (position < rhs.position) {
-				Expression not = unaryExpression.apply(rhs.element);
-				expressions.push(new Position<>(position, not));
+				expressions.push(new Position<>(position, unaryExpression.apply(rhs.element)));
 				return success();
 			}
 			return missingRhsOperand(position, representation);
@@ -108,4 +115,5 @@ class Operator {
 	private String missingOneOperand(String side) {
 		return "missing " + side + " operand";
 	}
+
 }

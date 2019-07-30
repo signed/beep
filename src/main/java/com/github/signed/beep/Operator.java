@@ -5,7 +5,7 @@ import static com.github.signed.beep.Associativity.Left;
 class Operator {
 
     static Operator nullaryOperator(String representation, int precedence) {
-        return new Operator(representation, precedence, 0, null, (blub, position) -> true);
+        return new Operator(representation, precedence, 0, null, (expressions, position) -> true);
     }
 
     static Operator unaryOperator(String representation, int precedence, Associativity associativity,

@@ -3,6 +3,7 @@ package com.github.signed.beep;
 import java.util.Optional;
 
 import static com.github.signed.beep.Associativity.Left;
+import static com.github.signed.beep.ExpressionCreator.ParseError;
 
 class Operator {
 
@@ -47,13 +48,9 @@ class Operator {
         return representation.equals(token);
     }
 
-    boolean createAndAddExpressionToOld(Stack<Position<Expression>> expressions, int position) {
-        return !createAndAddExpressionTo(expressions, position).isPresent();
-    }
-
     Optional<String> createAndAddExpressionTo(Stack<Position<Expression>> expressions, int position) {
         if (expressions.size() < arity) {
-            return Optional.of("missing operand");
+            return ParseError("missing operand");
         }
         return expressionCreator.accept(expressions, position);
     }

@@ -38,13 +38,13 @@ class ParserErrorTests {
 
 	@Test
 	void partialUnaryOperator() {
-		assertThat(parseErrorFromParsing("!")).contains("hpp");
+		assertThat(parseErrorFromParsing("!")).contains("missing operand");
 	}
 
 	@Test
 	void partialBinaryOperator() {
-		assertThat(parseErrorFromParsing("& foo")).contains("hpp");
-		assertThat(parseErrorFromParsing("foo |")).contains("hpp");
+		assertThat(parseErrorFromParsing("& foo")).contains("missing operand");
+		assertThat(parseErrorFromParsing("foo |")).contains("missing operand");
 	}
 
     @ParameterizedTest
@@ -57,8 +57,8 @@ class ParserErrorTests {
         // @formatter:off
         return Stream.of(
                 Arguments.of("foo bar", "missing operator"),
-                Arguments.of("foo bar |", "hpp"),
-                Arguments.of("foo bar &", "hpp"),
+                Arguments.of("foo bar |", "problem parsing or"),
+                Arguments.of("foo bar &", "problem parsing and"),
                 Arguments.of("foo & (bar !)", "! missing operand"),
                 Arguments.of("foo & (bar baz) |", "problem parsing and"),
                 Arguments.of("foo & (bar baz) &", "problem parsing and"),

@@ -90,8 +90,9 @@ public class Parser {
                     return ParseResult.error("missing closing parenthesis");
                 }
 
-                if (!operator.createAndAddExpressionToOld(expressions,pop.index)) {
-                    return ParseResult.error("hpp");
+                Optional<String> maybeParseError = operator.createAndAddExpressionTo(expressions, pop.index);
+                if (maybeParseError.isPresent()) {
+                    return ParseResult.error(maybeParseError.get());
                 }
             }
 

@@ -20,6 +20,7 @@ class ShuntingYard {
 	private static final Operator RightParenthesis = nullaryOperator(")", -1);
 	private static final Operator LeftParenthesis = nullaryOperator("(", -2);
 	private static final Operator Sentinel = nullaryOperator("sentinel", MIN_VALUE);
+	private static final Token SentinelToken = new Token(-1, "");
 
 	private final Operators validOperators = new Operators();
 	private final Stack<TokenWith<Expression>> expressions = new DequeStack<>();
@@ -28,7 +29,7 @@ class ShuntingYard {
 
 	ShuntingYard(List<Token> tokens) {
 		this.tokens = tokens;
-		pushOperatorAt(new Token(-1, ""), Sentinel);
+		pushOperatorAt(SentinelToken, Sentinel);
 	}
 
 	public ParseResult execute() {

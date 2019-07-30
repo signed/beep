@@ -25,11 +25,13 @@ class ParseStatus {
 	}
 
 	static ParseStatus errorAt(Token token, String operatorRepresentation, String message) {
-		return error(operatorRepresentation + " at " + format(token.position) + " " + message);
+		return error(operatorRepresentation + " at " + format(token.trimmedTokenStartIndex()) + " " + message);
 	}
 
 	static ParseStatus missingOperatorBetween(Position<Expression> lhs, Position<Expression> rhs) {
-		return error("missing operator between " + format(lhs) + " and " + format(rhs));
+		String lhsString = lhs.element.toString() + " " + format(lhs.token.endIndex());
+		String rhsString = rhs.element.toString() + " " + format(rhs.token.trimmedTokenStartIndex());
+		return error("missing operator between " + lhsString + " and " + rhsString);
 	}
 
 	static ParseStatus missingOperator() {
@@ -38,10 +40,6 @@ class ParseStatus {
 
 	static ParseStatus emptyTagExpression() {
 		return error("empty tag expression");
-	}
-
-	private static String format(Position<Expression> position) {
-		return position.element.toString() + " " + format(position.position);
 	}
 
 	private static String format(int position) {

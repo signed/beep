@@ -25,7 +25,7 @@ class Tokenizer {
 			int foundAt = infixTagExpression.indexOf(token, startIndex);
 			int endIndex = foundAt + token.length();
 			String rawToken = infixTagExpression.substring(startIndex, endIndex);
-			tokens.add(new Token(startIndex, position, rawToken));
+			tokens.add(Token.singlePosition(startIndex, position, rawToken));
 			startIndex = endIndex;
 		}
 		return tokens;

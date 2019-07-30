@@ -47,14 +47,14 @@ class ParserErrorTests {
 		assertThat(parseErrorFromParsing("foo |")).contains("| at <1> missing operand");
 	}
 
-    @ParameterizedTest
-    @MethodSource("data")
-    void acceptanceTests(String tagExpression, String parseError) {
-        assertThat(parseErrorFromParsing(tagExpression)).contains(parseError);
-    }
+	@ParameterizedTest
+	@MethodSource("data")
+	void acceptanceTests(String tagExpression, String parseError) {
+		assertThat(parseErrorFromParsing(tagExpression)).contains(parseError);
+	}
 
-    private static Stream<Arguments> data() {
-        // @formatter:off
+	private static Stream<Arguments> data() {
+		// @formatter:off
         return Stream.of(
                 Arguments.of("foo bar", "missing operator"),
                 Arguments.of("foo bar |", "| at <2> missing rhs operand"),
@@ -77,9 +77,9 @@ class ParserErrorTests {
                 Arguments.of("foo !| bar", "! at <1> missing rhs operand")
         );
         // @formatter:on
-    }
+	}
 
-    private Optional<String> parseErrorFromParsing(String tagExpression) {
+	private Optional<String> parseErrorFromParsing(String tagExpression) {
 		return parser.parse(tagExpression).parseError();
 	}
 }

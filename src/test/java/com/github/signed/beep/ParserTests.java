@@ -58,7 +58,7 @@ class ParserTests {
 		);
 		// @formatter:on
 	}
-    
+
 	private Expression expressionParsedFrom(String tagExpression) {
 		return parser.parse(tagExpression).expressionOrThrow(
 			(error) -> new RuntimeException("[" + tagExpression + "] should be parsable"));

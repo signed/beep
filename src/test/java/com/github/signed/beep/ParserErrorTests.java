@@ -60,7 +60,7 @@ class ParserErrorTests {
                 Arguments.of("|", "| at <0> missing lhs and rhs operand"),
                 Arguments.of("| |", "| at <0> missing lhs and rhs operand"),
                 Arguments.of("!", "! at <0> missing rhs operand"),
-                Arguments.of("foo bar", "missing operator"), // improve?
+                Arguments.of("foo bar", "missing operator"),
                 Arguments.of("foo bar |", "| at <2> missing rhs operand"),
                 Arguments.of("foo bar &", "& at <2> missing rhs operand"),
                 Arguments.of("foo & (bar !)", "! at <4> missing rhs operand"),

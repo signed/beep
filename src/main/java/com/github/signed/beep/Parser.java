@@ -23,11 +23,12 @@ public class Parser {
     private final Tokenizer tokenizer = new Tokenizer();
 
     Optional<Expression> parse(String infixTagExpression) {
+        List<String> tokens = tokenizer.tokenize(infixTagExpression);
+
         Stack<Position<Expression>> expressions = new DequeStack<>();
         Stack<Position<Operator>> operators = new DequeStack<>();
         operators.push(new Position<>(-1, Sentinel));
 
-        List<String> tokens = tokenizer.tokenize(infixTagExpression);
         for (int i = 0; i < tokens.size(); ++i) {
             String token = tokens.get(i);
             if (LeftParenthesis.represents(token)) {

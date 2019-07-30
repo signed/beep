@@ -93,7 +93,10 @@ public class Parser {
             }
 
             if (expressions.size() != 1) {
-                return ParseResult.error("hqq");
+                if (expressions.isEmpty()) {
+                    return ParseResult.error("empty tag expression");
+                }
+                return ParseResult.error("missing operator");
             }
             return ParseResult.success(expressions.pop().element);
         }

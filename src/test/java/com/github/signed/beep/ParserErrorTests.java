@@ -16,12 +16,12 @@ class ParserErrorTests {
 
 	@Test
 	void cantParseExpressionFromNull() {
-		assertThat(parseErrorFromParsing(null)).isNotEmpty();
+		assertThat(parseErrorFromParsing(null)).contains("empty tag expression");
 	}
 
 	@Test
 	void emptyExpression() {
-		assertThat(parseErrorFromParsing("")).isNotEmpty();
+		assertThat(parseErrorFromParsing("")).contains("empty tag expression");
 	}
 
 	@Test
@@ -38,13 +38,13 @@ class ParserErrorTests {
 
 	@Test
 	void partialUnaryOperator() {
-		assertThat(parseErrorFromParsing("!")).isNotEmpty();
+		assertThat(parseErrorFromParsing("!")).contains("hpp");
 	}
 
 	@Test
 	void partialBinaryOperator() {
-		assertThat(parseErrorFromParsing("& foo")).isNotEmpty();
-		assertThat(parseErrorFromParsing("foo |")).isNotEmpty();
+		assertThat(parseErrorFromParsing("& foo")).contains("hpp");
+		assertThat(parseErrorFromParsing("foo |")).contains("hpp");
 	}
 
     @ParameterizedTest
@@ -56,6 +56,7 @@ class ParserErrorTests {
     private static Stream<Arguments> data() {
         // @formatter:off
         return Stream.of(
+                Arguments.of("foo bar", "missing operator"),
                 Arguments.of("foo bar |", "hpp"),
                 Arguments.of("foo bar &", "hpp"),
                 Arguments.of("foo & (bar !)", "hmm"),
@@ -63,7 +64,6 @@ class ParserErrorTests {
                 Arguments.of("foo & (bar baz) &", "hoo"),
                 Arguments.of("foo & |", "hoo"),
                 Arguments.of("| |", "hoo"),
-                Arguments.of("foo bar", "hqq"),
                 Arguments.of("( foo & bar ) )", "missing opening parenthesis"),
                 Arguments.of("( ( foo & bar )", "missing closing parenthesis"),
                 Arguments.of("foo !& bar", "hoo"),

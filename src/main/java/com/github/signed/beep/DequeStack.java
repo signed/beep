@@ -31,4 +31,5 @@ class DequeStack<T> implements Stack<T> {
 	public int size() {
 		return deque.size();
 	}
+
 }

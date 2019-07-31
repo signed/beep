@@ -25,6 +25,7 @@ class Operator {
 
 	static Operator unaryOperator(String representation, int precedence, Associativity associativity,
 			Function<TagExpression, TagExpression> unaryExpression) {
+
 		return new Operator(representation, precedence, 1, associativity, (expressions, operatorToken) -> {
 			TokenWith<TagExpression> rhs = expressions.pop();
 			if (operatorToken.isLeftOf(rhs.token)) {
@@ -38,6 +39,7 @@ class Operator {
 
 	static Operator binaryOperator(String representation, int precedence, Associativity associativity,
 			BiFunction<TagExpression, TagExpression, TagExpression> binaryExpression) {
+
 		return new Operator(representation, precedence, 2, associativity, (expressions, operatorToken) -> {
 			TokenWith<TagExpression> rhs = expressions.pop();
 			TokenWith<TagExpression> lhs = expressions.pop();
@@ -65,6 +67,7 @@ class Operator {
 
 	private Operator(String representation, int precedence, int arity, Associativity associativity,
 			TagExpressionCreator tagExpressionCreator) {
+
 		this.representation = representation;
 		this.precedence = precedence;
 		this.arity = arity;

@@ -1,6 +1,7 @@
 package com.github.signed.beep;
 
 class TokenWith<T> {
+
 	final Token token;
 	final T element;
 
@@ -8,4 +9,5 @@ class TokenWith<T> {
 		this.token = token;
 		this.element = element;
 	}
+
 }
